@@ -16,21 +16,55 @@ type NaverShoppingResponse = {
   items: NaverShoppingItem[];
   /** 전체 검색 결과 수(응답에 없을 수 있음) */
   total?: number;
+  start?: number;
+  display?: number;
 };
 
 function stripHtmlTags(value: string): string {
   return value.replace(/<[^>]*>/g, "");
 }
 
-/** 네이버 쇼핑 API: display 최대 100, start 최대 1000 → 최대 10페이지 ≈ 1000건 */
-const NAVER_SHOP_DISPLAY_MAX = 100;
-const NAVER_SHOP_START_MAX = 1000;
-const NAVER_SHOP_MAX_ITEMS = 1000;
+/** 네이버 쇼핑 API 제약: display 최대 100, start 최대 1000 */
+export const NAVER_SHOP_DISPLAY_MAX = 100;
+export const NAVER_SHOP_START_MAX = 1000;
+
+/** 정렬 기준 — 네이버 쇼핑 API `sort` 값과 1:1로 매핑됨 */
+export type SortKey = "sim" | "date" | "asc" | "dsc";
+
+export const SORT_KEYS: SortKey[] = ["sim", "date", "asc", "dsc"];
+
+export function parseSortKey(value: string | null | undefined): SortKey {
+  if (value && (SORT_KEYS as string[]).includes(value)) {
+    return value as SortKey;
+  }
+  return "sim";
+}
+
+export type SearchOptions = {
+  /** 1-based 시작 인덱스 (기본 1) */
+  start?: number;
+  /** 한 페이지 결과 수 (1~100, 기본 40) */
+  display?: number;
+  /** 정렬 (기본 sim) */
+  sort?: SortKey;
+};
+
+export type SearchPage = {
+  items: Product[];
+  total: number;
+  start: number;
+  display: number;
+  /** 다음 페이지 요청 가능 여부 */
+  hasMore: boolean;
+  /** 다음 페이지의 start 인덱스 (hasMore일 때만 유효) */
+  nextStart: number;
+};
 
 async function fetchNaverShopPage(
   query: string,
   start: number,
   display: number,
+  sort: SortKey,
   clientId: string,
   clientSecret: string
 ): Promise<NaverShoppingResponse> {
@@ -38,7 +72,7 @@ async function fetchNaverShopPage(
   endpoint.searchParams.set("query", query);
   endpoint.searchParams.set("display", String(display));
   endpoint.searchParams.set("start", String(start));
-  endpoint.searchParams.set("sort", "sim");
+  endpoint.searchParams.set("sort", sort);
 
   const response = await fetch(endpoint.toString(), {
     method: "GET",
@@ -72,7 +106,20 @@ function mapNaverItemsToProducts(
   }));
 }
 
-export async function fetchNaverProducts(query: string): Promise<Product[]> {
+function clampDisplay(display: number | undefined): number {
+  if (!display || display < 1) return 40;
+  return Math.min(display, NAVER_SHOP_DISPLAY_MAX);
+}
+
+function clampStart(start: number | undefined): number {
+  if (!start || start < 1) return 1;
+  return Math.min(start, NAVER_SHOP_START_MAX);
+}
+
+export async function fetchNaverProductsPage(
+  query: string,
+  options: SearchOptions = {}
+): Promise<SearchPage> {
   const clientId = process.env.NAVER_CLIENT_ID;
   const clientSecret = process.env.NAVER_CLIENT_SECRET;
 
@@ -80,69 +127,35 @@ export async function fetchNaverProducts(query: string): Promise<Product[]> {
     throw new Error("NAVER API credentials are missing.");
   }
 
-  const collected: NaverShoppingItem[] = [];
-  let start = 1;
+  const start = clampStart(options.start);
+  const display = clampDisplay(options.display);
+  const sort = options.sort ?? "sim";
 
-  while (start <= NAVER_SHOP_START_MAX) {
-    const page = await fetchNaverShopPage(
-      query,
-      start,
-      NAVER_SHOP_DISPLAY_MAX,
-      clientId,
-      clientSecret
-    );
-
-    collected.push(...page.items);
-
-    if (page.items.length < NAVER_SHOP_DISPLAY_MAX) {
-      break;
-    }
-    if (collected.length >= NAVER_SHOP_MAX_ITEMS) {
-      break;
-    }
-    if (
-      page.total != null &&
-      collected.length >= Math.min(page.total, NAVER_SHOP_MAX_ITEMS)
-    ) {
-      break;
-    }
-
-    const nextStart = start + NAVER_SHOP_DISPLAY_MAX;
-    if (nextStart > NAVER_SHOP_START_MAX) {
-      break;
-    }
-    start = nextStart;
-  }
-
-  const capped = collected.slice(0, NAVER_SHOP_MAX_ITEMS);
-  return mapNaverItemsToProducts(capped, 0);
-}
-
-type SearchSource = {
-  name: string;
-  fetcher: (query: string) => Promise<Product[]>;
-};
-
-const searchSources: SearchSource[] = [
-  {
-    name: "naver",
-    fetcher: fetchNaverProducts,
-  },
-];
-
-export async function fetchUnifiedProducts(query: string): Promise<Product[]> {
-  const settledResults = await Promise.all(
-    searchSources.map(async (source) => {
-      try {
-        return await source.fetcher(query);
-      } catch (error) {
-        console.error(`[search:${source.name}]`, error);
-        return [];
-      }
-    })
+  const page = await fetchNaverShopPage(
+    query,
+    start,
+    display,
+    sort,
+    clientId,
+    clientSecret
   );
 
-  return settledResults
-    .flat()
-    .sort((left, right) => left.price - right.price);
+  const items = mapNaverItemsToProducts(page.items, start - 1);
+  const total = page.total ?? items.length;
+  const nextStart = start + display;
+
+  // 다음 페이지 존재 조건: 이번 페이지가 꽉 찼고 & start 상한을 아직 안 넘었고 & total 기준으로도 더 있음
+  const hasMore =
+    items.length >= display &&
+    nextStart <= NAVER_SHOP_START_MAX &&
+    nextStart <= total;
+
+  return {
+    items,
+    total,
+    start,
+    display,
+    hasMore,
+    nextStart,
+  };
 }
