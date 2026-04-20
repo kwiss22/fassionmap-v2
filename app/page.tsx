@@ -5,12 +5,12 @@ import {
   Suspense,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { NAVER_SHOP_START_MAX, NAVER_SHOP_DISPLAY_MAX } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { type Product } from "@/lib/product";
@@ -29,6 +29,11 @@ const sortOptions: { key: SortKey; label: string }[] = [
 ];
 
 const PAGE_SIZE = 40;
+
+// 네이버 쇼핑 API는 start > 1000을 허용하지 않으므로,
+// 실제로 도달 가능한 상한은 (start 상한 - 1) + display 만큼이다.
+const REACHABLE_CEILING =
+  NAVER_SHOP_START_MAX - 1 + Math.min(PAGE_SIZE, NAVER_SHOP_DISPLAY_MAX);
 
 function parseCategoryParam(value: string | null): CategoryKey {
   if (!value) {
@@ -52,10 +57,18 @@ function HomeSearchContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [keyword, setKeyword] = useState("");
-  const [selectedCategory, setSelectedCategory] =
-    useState<CategoryKey>("전체");
-  const [sort, setSort] = useState<SortKey>("sim");
+  // URL은 mount 시점에만 한 번 읽는다. 이후는 state가 source of truth.
+  // (useEffect로 양방향 바인딩하면 router.replace가 searchParams 참조를 갱신하면서
+  //  effect 재실행 → 기본값 reset → 다시 replace 사이클이 생길 수 있음)
+  const [keyword, setKeyword] = useState(
+    () => searchParams.get("q") ?? ""
+  );
+  const [selectedCategory, setSelectedCategory] = useState<CategoryKey>(() =>
+    parseCategoryParam(searchParams.get("cat"))
+  );
+  const [sort, setSort] = useState<SortKey>(() =>
+    parseSortKey(searchParams.get("sort"))
+  );
 
   const [items, setItems] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
@@ -66,15 +79,6 @@ function HomeSearchContent() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  useLayoutEffect(() => {
-    const q = searchParams.get("q") ?? "";
-    const cat = parseCategoryParam(searchParams.get("cat"));
-    const nextSort = parseSortKey(searchParams.get("sort"));
-    setKeyword(q);
-    setSelectedCategory(cat);
-    setSort(nextSort);
-  }, [searchParams]);
-
   const trimmedKeyword = keyword.trim();
   const finalQuery = useMemo(() => {
     const categoryText = selectedCategory === "전체" ? "" : selectedCategory;
@@ -82,6 +86,9 @@ function HomeSearchContent() {
     return combined.trim();
   }, [trimmedKeyword, selectedCategory]);
 
+  // state → URL 단방향 sync. searchParams는 deps에 넣지 않는다.
+  // 비교는 마지막으로 우리가 쓴 URL과 하여, router.replace가 재실행 유발 시에도 멱등.
+  const lastWrittenUrlRef = useRef<string | null>(null);
   useEffect(() => {
     const params = new URLSearchParams();
     if (trimmedKeyword) {
@@ -93,21 +100,14 @@ function HomeSearchContent() {
     if (sort !== "sim") {
       params.set("sort", sort);
     }
-    const desiredQ = params.get("q");
-    const desiredCat = params.get("cat");
-    const desiredSort = params.get("sort");
-    const currentQ = searchParams.get("q");
-    const currentCat = searchParams.get("cat");
-    const currentSort = searchParams.get("sort");
-    const qChanged = (desiredQ ?? "") !== (currentQ ?? "");
-    const catChanged = (desiredCat ?? "") !== (currentCat ?? "");
-    const sortChanged = (desiredSort ?? "") !== (currentSort ?? "");
-    if (!qChanged && !catChanged && !sortChanged) {
+    const qs = params.toString();
+    const nextUrl = qs ? `${pathname}?${qs}` : pathname;
+    if (lastWrittenUrlRef.current === nextUrl) {
       return;
     }
-    const next = params.toString();
-    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
-  }, [trimmedKeyword, selectedCategory, sort, pathname, router, searchParams]);
+    lastWrittenUrlRef.current = nextUrl;
+    router.replace(nextUrl, { scroll: false });
+  }, [trimmedKeyword, selectedCategory, sort, pathname, router]);
 
   const hasQuery = finalQuery.length > 0;
 
@@ -284,14 +284,17 @@ function HomeSearchContent() {
                 setKeyword("");
                 setSelectedCategory("전체");
                 setSort("sim");
-                router.replace(pathname, { scroll: false });
               }}
             >
               초기화
             </Button>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="카테고리 필터"
+          >
             {fixedCategories.map((category) => {
               const isActive = selectedCategory === category;
               return (
@@ -300,6 +303,7 @@ function HomeSearchContent() {
                   size="sm"
                   variant={isActive ? "default" : "outline"}
                   onClick={() => setSelectedCategory(category)}
+                  aria-pressed={isActive}
                 >
                   {category}
                 </Button>
@@ -336,11 +340,23 @@ function HomeSearchContent() {
         <section>
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-on-surface-variant">
-              {hasQuery
-                ? total > 0
-                  ? `${items.length.toLocaleString("ko-KR")} / ${total.toLocaleString("ko-KR")}개 표시 중`
-                  : `총 ${items.length}개 상품`
-                : "검색어를 입력하세요."}
+              {!hasQuery
+                ? "검색어를 입력하세요."
+                : isLoading && items.length === 0
+                  ? "검색 중..."
+                  : items.length === 0
+                    ? "검색 결과 없음"
+                    : (() => {
+                        // 네이버가 내려주는 total은 수백만~수천만까지 찍히지만
+                        // 실제로 스크롤로 도달 가능한 상한은 REACHABLE_CEILING.
+                        const capped = Math.min(total, REACHABLE_CEILING);
+                        const overCeiling = total > REACHABLE_CEILING;
+                        const shown = items.length.toLocaleString("ko-KR");
+                        const pool =
+                          capped.toLocaleString("ko-KR") +
+                          (overCeiling ? "+" : "");
+                        return `${shown} / ${pool}개 표시 중`;
+                      })()}
             </p>
             {isLoading ? (
               <div className="flex items-center gap-2 text-sm text-on-surface-variant">
