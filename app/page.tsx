@@ -395,8 +395,13 @@ function HomeSearchContent() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {items.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  // 데스크탑은 3열이라 첫 행이 3장 → LCP 후보가 그 안에 포함됨
+                  priority={index < 3}
+                />
               ))}
             </div>
           )}

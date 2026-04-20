@@ -55,7 +55,8 @@ function ProductDetailBody() {
             alt={product.name}
             fill
             className="object-cover"
-            sizes="100vw"
+            // 컨테이너가 max-w-lg(32rem=512px)로 제한되므로 100vw는 과도한 힌트
+            sizes="(max-width: 512px) 100vw, 512px"
             priority
           />
         </div>

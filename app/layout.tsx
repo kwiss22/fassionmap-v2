@@ -29,6 +29,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`light ${inter.variable} ${newsreader.variable}`}>
       <head>
+        {/* App Router root layout에서 <link>는 공식 권장 방식.
+            @next/next/no-page-custom-font는 pages router 기준이라 여기선 false positive. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0&display=swap"
           rel="stylesheet"
