@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts — variables set in layout via next/font */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-headline: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-label: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-DEFAULT: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-full: 9999px;
+
+  --color-background: #faf9f7;
+  --color-foreground: #1a1c1b;
+  --color-primary: #000000;
+  --color-secondary: #5f5e5e;
+  --color-tertiary: #3a3c3c;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #410002;
+  --color-surface: #faf9f7;
+  --color-surface-bright: #faf9f7;
+  --color-surface-dim: #dadad8;
+  --color-surface-variant: #e3e2e0;
+  --color-surface-container: #efeeec;
+  --color-surface-container-low: #f4f3f1;
+  --color-surface-container-high: #e9e8e6;
+  --color-surface-container-highest: #e3e2e0;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #1a1c1b;
+  --color-on-surface-variant: #474747;
+  --color-inverse-surface: #2f3130;
+  --color-inverse-on-surface: #f1f1ef;
+  --color-inverse-primary: #c8c6c5;
+  --color-outline: #777777;
+  --color-outline-variant: #c6c6c6;
+  --color-primary-container: #3c3b3b;
+  --color-on-primary-container: #ffffff;
+  --color-on-primary: #e5e2e1;
+  --color-primary-fixed: #5f5e5e;
+  --color-primary-fixed-dim: #474746;
+  --color-on-primary-fixed: #ffffff;
+  --color-on-primary-fixed-variant: #e5e2e1;
+  --color-secondary-container: #d6d4d3;
+  --color-on-secondary-container: #1b1c1c;
+  --color-on-secondary: #ffffff;
+  --color-secondary-fixed: #c8c6c6;
+  --color-secondary-fixed-dim: #acabaa;
+  --color-on-secondary-fixed: #1b1c1c;
+  --color-on-secondary-fixed-variant: #3b3b3b;
+  --color-tertiary-container: #737575;
+  --color-on-tertiary-container: #ffffff;
+  --color-on-tertiary: #e2e2e2;
+  --color-tertiary-fixed: #5d5f5f;
+  --color-tertiary-fixed-dim: #454747;
+  --color-on-tertiary-fixed: #ffffff;
+  --color-on-tertiary-fixed-variant: #e2e2e2;
+  --color-surface-tint: #5f5e5e;
+  --color-on-background: #1a1c1b;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #faf9f7;
+  --foreground: #1a1c1b;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
+}
+
+.font-newsreader {
+  font-family: var(--font-headline);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.editorial-shadow {
+  box-shadow: 0 20px 40px rgba(26, 28, 27, 0.04);
+}
+
+.editorial-serif {
+  font-family: var(--font-headline);
+}
+
+.masonry-grid {
+  column-count: 2;
+  column-gap: 1rem;
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+.serif-voice {
+  font-family: var(--font-headline);
+}
+
+.nav-drawer-symbols .material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
+}
+
+.profile-sheet-symbols .material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
 }
