@@ -11,7 +11,6 @@ import {
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { NAVER_SHOP_START_MAX, NAVER_SHOP_DISPLAY_MAX } from "@/lib/api";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { type Product } from "@/lib/product";
 import { parseSortKey, type SortKey } from "@/lib/api";
@@ -247,194 +246,217 @@ function HomeSearchContent() {
     return () => observer.disconnect();
   }, [loadMore]);
 
+  const capped = Math.min(total, REACHABLE_CEILING);
+  const overCeiling = total > REACHABLE_CEILING;
+  const resultLabel = !hasQuery
+    ? "검색어를 입력하세요"
+    : isLoading && items.length === 0
+      ? "검색 중"
+      : items.length === 0
+        ? "결과 없음"
+        : `${items.length.toLocaleString("ko-KR")} / ${capped.toLocaleString(
+            "ko-KR"
+          )}${overCeiling ? "+" : ""}`;
+
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-outline-variant bg-surface/95 px-6 py-4 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 border-b border-outline-variant/70 bg-surface/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-6 px-8">
           <Link
             href="/"
-            className="font-newsreader text-xl font-medium italic text-primary"
+            className="font-newsreader text-[22px] italic leading-none tracking-tight text-primary"
           >
             패션맵
           </Link>
+          <span className="eyebrow hidden md:inline">
+            Curated · Naver Shopping
+          </span>
         </div>
       </header>
 
-      <main className="mx-auto max-w-screen-xl px-6 pb-16 pt-8">
-        <section className="mb-8 space-y-4">
-          <div className="space-y-2">
-            <h1 className="font-newsreader text-3xl text-primary md:text-4xl">
-              쇼핑 검색
-            </h1>
-            <p className="text-sm text-secondary">
-              검색 후 상품을 눌러 상세에서 제휴 링크로 이동할 수 있습니다.
-            </p>
-          </div>
+      <main className="mx-auto max-w-[1440px] px-8 pb-24">
+        {/* Editorial hero */}
+        <section className="border-b border-outline-variant/60 pb-10 pt-16 md:pt-24">
+          <p className="eyebrow mb-6">Issue N° 01 — Spring Archive</p>
+          <h1 className="editorial-display text-[13vw] leading-[0.9] text-primary md:text-[clamp(4rem,8.4vw,8.5rem)]">
+            Everything,<br className="hidden md:block" />
+            <span> beautifully </span>
+            <span className="text-secondary">found.</span>
+          </h1>
+          <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-on-surface-variant md:mt-10">
+            네이버 쇼핑 인덱스 위에 얹은 에디토리얼 뷰. 키워드와 카테고리로
+            좁히고, 마음에 드는 상품을 선택하면 제휴 쇼핑몰로 바로 이어집니다.
+          </p>
+        </section>
 
-          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+        {/* Search + filters */}
+        <section className="sticky top-16 z-30 -mx-8 border-b border-outline-variant/60 bg-surface/90 px-8 py-6 backdrop-blur">
+          <div className="flex items-end gap-8 border-b border-outline pb-4">
+            <span className="eyebrow shrink-0 pb-2">Search</span>
             <Input
+              variant="underline"
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              placeholder="상품명으로 검색"
+              placeholder="Jacket, knit, loafers…"
               aria-label="상품 검색"
+              className="border-none px-0 focus-visible:border-none"
             />
-            <Button
-              variant="outline"
+            <button
+              type="button"
               onClick={() => {
                 setKeyword("");
                 setSelectedCategory("전체");
                 setSort("sim");
               }}
+              className="eyebrow shrink-0 pb-2 text-on-surface-variant transition-colors hover:text-primary"
             >
-              초기화
-            </Button>
+              Reset
+            </button>
           </div>
 
-          <div
-            className="flex flex-wrap gap-2"
-            role="group"
-            aria-label="카테고리 필터"
-          >
-            {fixedCategories.map((category) => {
-              const isActive = selectedCategory === category;
-              return (
-                <Button
-                  key={category}
-                  size="sm"
-                  variant={isActive ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category)}
-                  aria-pressed={isActive}
-                >
-                  {category}
-                </Button>
-              );
-            })}
-          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <span className="eyebrow">Category</span>
+            <div
+              className="flex flex-wrap items-center gap-x-5 gap-y-2"
+              role="group"
+              aria-label="카테고리 필터"
+            >
+              {fixedCategories.map((category) => {
+                const isActive = selectedCategory === category;
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setSelectedCategory(category)}
+                    aria-pressed={isActive}
+                    data-active={isActive}
+                    className="underline-link text-sm text-on-surface transition-colors data-[active=true]:text-primary"
+                  >
+                    {category}
+                  </button>
+                );
+              })}
+            </div>
 
-          <div
-            className="flex flex-wrap items-center gap-2"
-            role="radiogroup"
-            aria-label="정렬 기준"
-          >
-            <span className="mr-1 text-xs uppercase tracking-wider text-on-surface-variant">
-              정렬
-            </span>
-            {sortOptions.map((option) => {
-              const isActive = sort === option.key;
-              return (
-                <Button
-                  key={option.key}
-                  size="sm"
-                  variant={isActive ? "default" : "outline"}
-                  onClick={() => setSort(option.key)}
-                  role="radio"
-                  aria-checked={isActive}
-                >
-                  {option.label}
-                </Button>
-              );
-            })}
+            <span className="eyebrow ml-auto">Sort</span>
+            <div
+              className="flex flex-wrap items-center gap-x-5 gap-y-2"
+              role="radiogroup"
+              aria-label="정렬 기준"
+            >
+              {sortOptions.map((option) => {
+                const isActive = sort === option.key;
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setSort(option.key)}
+                    role="radio"
+                    aria-checked={isActive}
+                    data-active={isActive}
+                    className="underline-link text-sm text-on-surface transition-colors data-[active=true]:text-primary"
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        <section>
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-on-surface-variant">
-              {!hasQuery
-                ? "검색어를 입력하세요."
-                : isLoading && items.length === 0
-                  ? "검색 중..."
-                  : items.length === 0
-                    ? "검색 결과 없음"
-                    : (() => {
-                        // 네이버가 내려주는 total은 수백만~수천만까지 찍히지만
-                        // 실제로 스크롤로 도달 가능한 상한은 REACHABLE_CEILING.
-                        const capped = Math.min(total, REACHABLE_CEILING);
-                        const overCeiling = total > REACHABLE_CEILING;
-                        const shown = items.length.toLocaleString("ko-KR");
-                        const pool =
-                          capped.toLocaleString("ko-KR") +
-                          (overCeiling ? "+" : "");
-                        return `${shown} / ${pool}개 표시 중`;
-                      })()}
+        <section className="mt-10">
+          <div className="mb-8 flex items-baseline justify-between border-b border-outline-variant/50 pb-4">
+            <p className="eyebrow">Showing</p>
+            <p className="font-newsreader text-base italic text-on-surface tabular-nums">
+              {resultLabel}
             </p>
-            {isLoading ? (
-              <div className="flex items-center gap-2 text-sm text-on-surface-variant">
-                <span className="h-3 w-3 animate-spin rounded-full border border-outline border-t-primary" />
-                검색 중...
-              </div>
-            ) : null}
           </div>
 
           {fetchError ? (
-            <div className="mb-4 border border-dashed border-error p-3 text-sm text-error">
+            <div className="mb-6 border-y border-error py-4 text-center text-sm tracking-wide text-error">
               {fetchError}
             </div>
           ) : null}
 
           {!hasQuery ? (
-            <div className="border border-dashed border-outline-variant p-8 text-center text-sm text-secondary">
-              카테고리만 선택하거나 검색어를 입력하면 네이버 쇼핑 결과를
-              불러옵니다.
+            <div className="flex min-h-[40vh] items-center justify-center border border-dashed border-outline-variant">
+              <div className="max-w-md px-6 text-center">
+                <p className="eyebrow mb-4">Begin</p>
+                <p className="font-newsreader text-2xl italic leading-snug text-primary">
+                  검색어를 입력하거나<br />
+                  카테고리를 선택해 시작하세요.
+                </p>
+              </div>
             </div>
           ) : isLoading && items.length === 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <article
-                  key={`skeleton-${index}`}
-                  className="overflow-hidden border border-outline-variant bg-surface"
-                >
+            <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={`skeleton-${index}`} className="space-y-3">
                   <div className="aspect-[4/5] w-full animate-pulse bg-surface-container" />
-                  <div className="space-y-2 p-4">
-                    <div className="h-5 w-16 animate-pulse bg-surface-container" />
-                    <div className="h-5 w-3/4 animate-pulse bg-surface-container" />
-                    <div className="h-4 w-1/3 animate-pulse bg-surface-container" />
-                  </div>
-                </article>
+                  <div className="h-3 w-1/3 animate-pulse bg-surface-container" />
+                  <div className="h-4 w-3/4 animate-pulse bg-surface-container" />
+                  <div className="h-3 w-1/4 animate-pulse bg-surface-container" />
+                </div>
               ))}
             </div>
+          ) : items.length === 0 && !fetchError ? (
+            <div className="flex min-h-[40vh] items-center justify-center border border-dashed border-outline-variant">
+              <div className="max-w-md px-6 text-center">
+                <p className="eyebrow mb-4">No match</p>
+                <p className="font-newsreader text-2xl italic leading-snug text-primary">
+                  조건에 맞는 상품을 찾지 못했습니다.
+                </p>
+                <p className="mt-3 text-sm text-on-surface-variant">
+                  다른 키워드로 시도하거나 카테고리를 바꿔보세요.
+                </p>
+              </div>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
               {items.map((product, index) => (
                 <ProductCard
                   key={product.id}
                   product={product}
-                  // 데스크탑은 3열이라 첫 행이 3장 → LCP 후보가 그 안에 포함됨
-                  priority={index < 3}
+                  // 데스크탑 4열 기준 첫 행(최대 4장)이 LCP 후보에 포함
+                  priority={index < 4}
                 />
               ))}
             </div>
           )}
 
-          {hasQuery && !isLoading && items.length === 0 && !fetchError ? (
-            <div className="mt-8 border border-dashed border-outline-variant p-8 text-center text-sm text-secondary">
-              검색 결과가 없습니다.
-            </div>
-          ) : null}
-
           {hasQuery && items.length > 0 ? (
             <div
               ref={sentinelRef}
               aria-hidden="true"
-              className="mt-8 flex h-16 items-center justify-center text-sm text-on-surface-variant"
+              className="mt-16 flex h-20 items-center justify-center"
             >
               {isLoadingMore ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-3 w-3 animate-spin rounded-full border border-outline border-t-primary" />
-                  더 불러오는 중...
+                <span className="eyebrow flex items-center gap-3">
+                  <span className="h-[1px] w-8 bg-on-surface-variant animate-pulse" />
+                  Loading more
+                  <span className="h-[1px] w-8 bg-on-surface-variant animate-pulse" />
                 </span>
               ) : hasMore ? (
-                <span className="text-xs uppercase tracking-wider">
-                  스크롤하여 더 보기
-                </span>
+                <span className="eyebrow">Scroll for more</span>
               ) : (
-                <span className="text-xs uppercase tracking-wider text-secondary">
-                  마지막 결과입니다
+                <span className="eyebrow text-secondary">
+                  End of selection
                 </span>
               )}
             </div>
           ) : null}
         </section>
+
+        <footer className="mt-24 border-t border-outline-variant/60 pt-8">
+          <div className="flex flex-col items-start justify-between gap-3 text-[11px] tracking-wider text-on-surface-variant md:flex-row md:items-center">
+            <span className="font-newsreader text-sm italic text-primary">
+              패션맵
+            </span>
+            <span className="uppercase">
+              © {new Date().getFullYear()} · Data by Naver Shopping
+            </span>
+          </div>
+        </footer>
       </main>
     </>
   );
@@ -444,9 +466,10 @@ export default function Home() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-screen-xl px-6 pb-16 pt-8">
-          <div className="h-10 w-48 animate-pulse rounded bg-surface-container" />
-          <div className="mt-6 h-10 w-full animate-pulse rounded bg-surface-container" />
+        <div className="mx-auto max-w-[1440px] px-8 pt-24">
+          <div className="h-3 w-32 animate-pulse bg-surface-container" />
+          <div className="mt-8 h-24 w-3/4 animate-pulse bg-surface-container" />
+          <div className="mt-6 h-4 w-1/2 animate-pulse bg-surface-container" />
         </div>
       }
     >

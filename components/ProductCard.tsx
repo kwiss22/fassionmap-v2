@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { type Product, productToDetailHref } from "@/lib/product";
 import { formatKrwAmount } from "@/lib/utils";
 
@@ -14,34 +13,34 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
   const detailHref = productToDetailHref(product);
 
   return (
-    <article className="overflow-hidden border border-outline-variant bg-surface">
-      <div className="relative aspect-[4/5] w-full">
-        <Badge className="absolute left-2 top-2 z-10 w-fit bg-black/70 text-white">
-          {product.mall}
-        </Badge>
-        {/* Link가 Image(fill)의 직계 부모가 되므로 position:relative 필수 */}
-        <Link href={detailHref} className="relative block h-full w-full">
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 50vw, 33vw"
-            priority={priority}
-          />
-        </Link>
-      </div>
+    <article className="group flex flex-col">
+      <Link
+        href={detailHref}
+        className="img-hover-zoom relative block aspect-[4/5] w-full overflow-hidden bg-surface-container-low"
+        aria-label={product.name}
+      >
+        <Image
+          src={product.imageUrl}
+          alt={product.name}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          priority={priority}
+        />
+      </Link>
 
-      <div className="space-y-2 p-4">
+      <div className="mt-4 space-y-1.5">
+        <p className="eyebrow truncate">{product.mall}</p>
         <Link
           href={detailHref}
-          className="block truncate text-base font-medium text-on-surface hover:underline"
           title={product.name}
+          className="clamp-2 block text-[13px] leading-snug text-on-surface transition-colors group-hover:text-secondary"
         >
           {product.name}
         </Link>
-        <p className="text-sm text-secondary">
-          {formatKrwAmount(product.price)}원
+        <p className="pt-1 text-[13px] tracking-wide tabular-nums text-primary">
+          {formatKrwAmount(product.price)}
+          <span className="ml-1 text-on-surface-variant">KRW</span>
         </p>
       </div>
     </article>

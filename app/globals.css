@@ -14,31 +14,34 @@
   --radius-xl: 0px;
   --radius-full: 9999px;
 
-  --color-background: #faf9f7;
-  --color-foreground: #1a1c1b;
-  --color-primary: #000000;
-  --color-secondary: #5f5e5e;
-  --color-tertiary: #3a3c3c;
+  /* Editorial boutique palette — warm ivory ground + deep ink text.
+     The small 2~4% warmth shift (#faf9f7 → #f7f4ed) and darker ink
+     (#1a1c1b → #0e1110) reads noticeably richer in grid/card contexts. */
+  --color-background: #f7f4ed;
+  --color-foreground: #0e1110;
+  --color-primary: #0e1110;
+  --color-secondary: #5c5a55;
+  --color-tertiary: #2d2f2d;
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
   --color-on-error: #ffffff;
   --color-on-error-container: #410002;
-  --color-surface: #faf9f7;
-  --color-surface-bright: #faf9f7;
-  --color-surface-dim: #dadad8;
-  --color-surface-variant: #e3e2e0;
-  --color-surface-container: #efeeec;
-  --color-surface-container-low: #f4f3f1;
-  --color-surface-container-high: #e9e8e6;
-  --color-surface-container-highest: #e3e2e0;
-  --color-surface-container-lowest: #ffffff;
-  --color-on-surface: #1a1c1b;
-  --color-on-surface-variant: #474747;
-  --color-inverse-surface: #2f3130;
-  --color-inverse-on-surface: #f1f1ef;
+  --color-surface: #f7f4ed;
+  --color-surface-bright: #fbf9f3;
+  --color-surface-dim: #d6d2c9;
+  --color-surface-variant: #e1ddd2;
+  --color-surface-container: #ede9dd;
+  --color-surface-container-low: #f1ede1;
+  --color-surface-container-high: #e5e1d4;
+  --color-surface-container-highest: #dedacd;
+  --color-surface-container-lowest: #fdfbf5;
+  --color-on-surface: #0e1110;
+  --color-on-surface-variant: #44433e;
+  --color-inverse-surface: #1b1d1b;
+  --color-inverse-on-surface: #efece4;
   --color-inverse-primary: #c8c6c5;
-  --color-outline: #777777;
-  --color-outline-variant: #c6c6c6;
+  --color-outline: #6b6a64;
+  --color-outline-variant: #c8c4b7;
   --color-primary-container: #3c3b3b;
   --color-on-primary-container: #ffffff;
   --color-on-primary: #e5e2e1;
@@ -65,14 +68,71 @@
 }
 
 :root {
-  --background: #faf9f7;
-  --foreground: #1a1c1b;
+  --background: #f7f4ed;
+  --foreground: #0e1110;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-on-surface);
   font-family: var(--font-body);
+  font-feature-settings: "ss01", "cv11", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Editorial typography helpers */
+.eyebrow {
+  font-size: 0.6875rem; /* 11px */
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+}
+
+.editorial-display {
+  font-family: var(--font-headline);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.95;
+}
+
+.underline-link {
+  background-image: linear-gradient(
+    currentColor,
+    currentColor
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition: background-size 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.underline-link:hover {
+  background-size: 100% 1px;
+}
+
+.underline-link[data-active="true"] {
+  background-size: 100% 1px;
+}
+
+/* Soft, non-blocky image hover zoom for product grids */
+.img-hover-zoom img {
+  transition: transform 800ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.img-hover-zoom:hover img {
+  transform: scale(1.04);
+}
+
+/* Line clamp fallback — Tailwind's line-clamp-2 relies on
+   -webkit-line-clamp which is widely supported but keep explicit. */
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .material-symbols-outlined {

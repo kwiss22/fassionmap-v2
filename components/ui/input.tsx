@@ -1,14 +1,32 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+type InputVariant = "bordered" | "underline";
 
-export function Input({ className, type = "text", ...props }: InputProps) {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  variant?: InputVariant;
+}
+
+const variantClassMap: Record<InputVariant, string> = {
+  bordered:
+    "h-11 border border-outline-variant bg-transparent px-4 text-sm focus-visible:border-primary focus-visible:outline-none",
+  underline:
+    "h-12 border-0 border-b border-outline bg-transparent px-0 text-base tracking-tight focus-visible:border-primary focus-visible:outline-none",
+};
+
+export function Input({
+  className,
+  type = "text",
+  variant = "bordered",
+  ...props
+}: InputProps) {
   return (
     <input
       type={type}
       className={cn(
-        "h-10 w-full border border-outline-variant bg-surface px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        "w-full text-on-surface placeholder:text-on-surface-variant/60 transition-colors",
+        variantClassMap[variant],
         className
       )}
       {...props}
