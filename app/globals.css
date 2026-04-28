@@ -3,52 +3,66 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  /* Fonts — variables set in layout via next/font */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-headline: var(--font-newsreader), ui-serif, Georgia, serif;
-  --font-label: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* ---------- Fonts ---------- */
+  --font-sans: var(--font-inter), "Pretendard Variable", Pretendard,
+    ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), "Pretendard Variable", Pretendard,
+    ui-sans-serif, system-ui, sans-serif;
+  --font-headline: var(--font-playfair), ui-serif, Georgia, "Times New Roman",
+    serif;
+  --font-label: var(--font-inter), "Pretendard Variable", Pretendard,
+    ui-sans-serif, system-ui, sans-serif;
 
+  /* ---------- Radius ---------- */
   --radius-DEFAULT: 0px;
+  --radius-sm: 2px;
+  --radius-card: 2px;
   --radius-lg: 0px;
   --radius-xl: 0px;
+  --radius-pill: 9999px;
   --radius-full: 9999px;
 
-  /* Editorial boutique palette — warm ivory ground + deep ink text.
-     The small 2~4% warmth shift (#faf9f7 → #f7f4ed) and darker ink
-     (#1a1c1b → #0e1110) reads noticeably richer in grid/card contexts. */
-  --color-background: #f7f4ed;
-  --color-foreground: #0e1110;
-  --color-primary: #0e1110;
+  /* ---------- Editorial Palette ----------
+     Quiet Luxury 매거진 무드: 따뜻한 아이보리 지면 + 딥 블랙 잉크.
+     시안 대비 2% 정도 더 따뜻하게 튜닝. */
+  --color-background: #f0ebe0;
+  --color-foreground: #0d0d0d;
+  --color-primary: #0d0d0d;
   --color-secondary: #5c5a55;
   --color-tertiary: #2d2f2d;
+  --color-accent: #b94a2a;
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
   --color-on-error: #ffffff;
   --color-on-error-container: #410002;
-  --color-surface: #f7f4ed;
-  --color-surface-bright: #fbf9f3;
-  --color-surface-dim: #d6d2c9;
-  --color-surface-variant: #e1ddd2;
-  --color-surface-container: #ede9dd;
-  --color-surface-container-low: #f1ede1;
-  --color-surface-container-high: #e5e1d4;
-  --color-surface-container-highest: #dedacd;
-  --color-surface-container-lowest: #fdfbf5;
-  --color-on-surface: #0e1110;
-  --color-on-surface-variant: #44433e;
+
+  /* Surface ramps */
+  --color-surface: #f0ebe0;
+  --color-surface-bright: #f7f3e9;
+  --color-surface-dim: #d6d0c2;
+  --color-surface-variant: #e1dccf;
+  --color-surface-container: #e6e0d2;
+  --color-surface-container-low: #ebe5d8;
+  --color-surface-container-high: #ddd6c7;
+  --color-surface-container-highest: #d3ccbc;
+  --color-surface-container-lowest: #f7f3e9;
+
+  --color-on-surface: #0d0d0d;
+  --color-on-surface-variant: #494741;
   --color-inverse-surface: #1b1d1b;
   --color-inverse-on-surface: #efece4;
   --color-inverse-primary: #c8c6c5;
   --color-outline: #6b6a64;
-  --color-outline-variant: #c8c4b7;
-  --color-primary-container: #3c3b3b;
+  --color-outline-variant: #c4bfb0;
+
+  --color-primary-container: #2a2a2a;
   --color-on-primary-container: #ffffff;
-  --color-on-primary: #e5e2e1;
-  --color-primary-fixed: #5f5e5e;
-  --color-primary-fixed-dim: #474746;
+  --color-on-primary: #f4f1e9;
+  --color-primary-fixed: #1c1c1c;
+  --color-primary-fixed-dim: #0d0d0d;
   --color-on-primary-fixed: #ffffff;
   --color-on-primary-fixed-variant: #e5e2e1;
+
   --color-secondary-container: #d6d4d3;
   --color-on-secondary-container: #1b1c1c;
   --color-on-secondary: #ffffff;
@@ -56,6 +70,7 @@
   --color-secondary-fixed-dim: #acabaa;
   --color-on-secondary-fixed: #1b1c1c;
   --color-on-secondary-fixed-variant: #3b3b3b;
+
   --color-tertiary-container: #737575;
   --color-on-tertiary-container: #ffffff;
   --color-on-tertiary: #e2e2e2;
@@ -63,13 +78,19 @@
   --color-tertiary-fixed-dim: #454747;
   --color-on-tertiary-fixed: #ffffff;
   --color-on-tertiary-fixed-variant: #e2e2e2;
+
   --color-surface-tint: #5f5e5e;
-  --color-on-background: #1a1c1b;
+  --color-on-background: #0d0d0d;
 }
 
 :root {
-  --background: #f7f4ed;
-  --foreground: #0e1110;
+  --background: #f0ebe0;
+  --foreground: #0d0d0d;
+}
+
+html,
+body {
+  min-height: 100dvh;
 }
 
 body {
@@ -82,13 +103,24 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Editorial typography helpers */
+/* ============================================================
+ * Editorial typography
+ * ============================================================ */
+
 .eyebrow {
   font-size: 0.6875rem; /* 11px */
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 500;
   color: var(--color-on-surface-variant);
+}
+
+.eyebrow-bold {
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-on-surface);
 }
 
 .editorial-display {
@@ -99,26 +131,134 @@ body {
   line-height: 0.95;
 }
 
+.editorial-serif {
+  font-family: var(--font-headline);
+}
+
+.font-playfair {
+  font-family: var(--font-headline);
+}
+
+/* 기존 호환: Newsreader 클래스명 몇 군데 남아있을 수 있어 alias. */
+.font-newsreader {
+  font-family: var(--font-headline);
+}
+
+/* ============================================================
+ * Pills, chips, badges
+ * ============================================================ */
+
+.pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--color-on-surface);
+  border-radius: var(--radius-pill);
+  font-size: 0.625rem; /* 10px */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background: transparent;
+  color: var(--color-on-surface);
+  white-space: nowrap;
+}
+
+.pill-tag--solid {
+  background: var(--color-on-surface);
+  color: var(--color-on-primary-container);
+  border-color: var(--color-on-surface);
+}
+
+.ai-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--color-primary);
+  color: #ffffff;
+  border-radius: var(--radius-pill);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.ai-chip::before {
+  content: "";
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  display: inline-block;
+}
+
+.chip-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  color: var(--color-on-surface);
+  background: transparent;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+
+.chip-filter[data-active="true"] {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* ============================================================
+ * Ticker bar — 시안 "IN THIS WEEK · 무료 배송 · 관세 포함"
+ * ============================================================ */
+
+@keyframes fm-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  gap: 2.5rem;
+  animation: fm-ticker 28s linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+  flex-wrap: nowrap;
+}
+
+.ticker-dot::before {
+  content: "·";
+  margin: 0 1.25rem;
+  color: var(--color-on-surface-variant);
+}
+
+/* ============================================================
+ * Links & interactions
+ * ============================================================ */
+
 .underline-link {
-  background-image: linear-gradient(
-    currentColor,
-    currentColor
-  );
+  background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   background-size: 0% 1px;
   background-position: 0 100%;
   transition: background-size 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.underline-link:hover {
-  background-size: 100% 1px;
-}
-
+.underline-link:hover,
 .underline-link[data-active="true"] {
   background-size: 100% 1px;
 }
 
-/* Soft, non-blocky image hover zoom for product grids */
 .img-hover-zoom img {
   transition: transform 800ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -126,8 +266,17 @@ body {
   transform: scale(1.04);
 }
 
-/* Line clamp fallback — Tailwind's line-clamp-2 relies on
-   -webkit-line-clamp which is widely supported but keep explicit. */
+/* ============================================================
+ * Utilities
+ * ============================================================ */
+
+.clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -135,12 +284,11 @@ body {
   overflow: hidden;
 }
 
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
-}
-
-.font-newsreader {
-  font-family: var(--font-headline);
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
@@ -155,32 +303,24 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.editorial-shadow {
-  box-shadow: 0 20px 40px rgba(26, 28, 27, 0.04);
+/* 바텀 네비가 있는 페이지의 스크롤 영역 하단 여백 */
+.pb-nav {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-.editorial-serif {
-  font-family: var(--font-headline);
+/* ============================================================
+ * Bottom nav
+ * ============================================================ */
+
+.bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.masonry-grid {
-  column-count: 2;
-  column-gap: 1rem;
-}
+/* ============================================================
+ * Product card silhouette placeholder
+ * 이미지 로드 전/실패 시 시안의 단색 blocky 느낌 유지
+ * ============================================================ */
 
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 1rem;
-}
-
-.serif-voice {
-  font-family: var(--font-headline);
-}
-
-.nav-drawer-symbols .material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
-}
-
-.profile-sheet-symbols .material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
+.silhouette-bg {
+  background: var(--color-surface-container);
 }

@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local diagnostic outputs (dev-only mall-stats / feed snapshots)
+/diag-output*.json
+/feed-*.json
