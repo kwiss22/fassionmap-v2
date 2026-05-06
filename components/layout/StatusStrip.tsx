@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { CURRENT_ISSUE } from "@/lib/editorial";
 import { useFollow } from "@/lib/hooks/use-follow";
 import { useSaved } from "@/lib/hooks/use-saved";
+import { SparklesIcon } from "@/components/ui/SparklesIcon";
 
 /**
  * TopBar 아래 sticky하게 떠 있는 매우 얇은 상태 strip.
@@ -31,7 +33,17 @@ export function StatusStrip() {
           <span aria-hidden className="hidden opacity-50 sm:inline">·</span>
           <span className="hidden sm:inline">UPDATED 2H AGO</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 sm:flex-nowrap">
+          <Link
+            href="/search"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-indigo-200/70 bg-[var(--color-ai-surface)] px-2 py-0.5 text-[9px] font-medium tracking-[0.12em] text-[var(--color-ai)] transition-colors hover:border-indigo-300"
+          >
+            <SparklesIcon className="h-2.5 w-2.5 shrink-0 opacity-90" />
+            AI 검색
+          </Link>
+          <span aria-hidden className="hidden opacity-50 sm:inline">
+            ·
+          </span>
           <span className="text-accent">{newCount} NEW THIS WEEK</span>
           <span aria-hidden className="hidden opacity-50 sm:inline">·</span>
           <span className="hidden sm:inline">

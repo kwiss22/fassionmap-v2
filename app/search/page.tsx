@@ -3,6 +3,8 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
+import { AIChip } from "@/components/ui/AIChip";
+import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { TopBar } from "@/components/layout/TopBar";
 import { productDedupeKey, type Product } from "@/lib/product";
 import {
@@ -164,34 +166,29 @@ function SearchBody() {
     <main className="min-h-[100dvh] bg-surface text-on-surface">
       <TopBar title="Search" showStatusStrip={false} />
 
-      <section className="px-5 pt-5">
+      <section className="px-5 pt-6">
+        <header className="mb-5 flex flex-col gap-2">
+          <AIChip>큐레이션 검색</AIChip>
+          <p className="max-w-md text-[13px] leading-relaxed text-on-surface-variant">
+            브랜드·스타일·가격대를 한 줄로 적어도 됩니다. 네이버 쇼핑 결과를 모아
+            보여 드립니다.
+          </p>
+        </header>
+
         <div className="relative">
           <span
             aria-hidden
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-ai)]"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle
-                cx="11"
-                cy="11"
-                r="6.5"
-                stroke="currentColor"
-                strokeWidth="1.4"
-              />
-              <path
-                d="m16.5 16.5 3.5 3.5"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-              />
-            </svg>
+            <SparklesIcon className="h-4 w-4" />
           </span>
           <input
             type="search"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="브랜드, 상품, 주제를 검색"
-            className="h-12 w-full rounded-full border border-outline-variant bg-surface-container-low pl-11 pr-5 text-[14px] outline-none placeholder:text-on-surface-variant focus:border-on-surface"
+            placeholder="브랜드·스타일·가격대를 입력해 보세요…"
+            className="ai-search-field h-12 w-full pl-11 pr-5 text-[14px] placeholder:text-on-surface-variant"
+            aria-label="AI 검색"
           />
         </div>
 

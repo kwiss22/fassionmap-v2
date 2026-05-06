@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSaved } from "@/lib/hooks/use-saved";
+import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { StatusStrip } from "./StatusStrip";
 
 type TopBarProps = {
@@ -128,23 +129,25 @@ function DefaultActions() {
       {/* Desktop persistent search — ⌘K 단축키 컨벤션을 시각적으로 차용 */}
       <Link
         href="/search"
-        aria-label="검색"
-        className="hidden lg:flex h-9 w-72 items-center gap-2 border border-outline-variant/80 bg-surface px-3 text-[12px] text-on-surface-variant transition-colors hover:border-on-surface hover:text-on-surface"
+        aria-label="AI 검색"
+        className="ai-search-trigger hidden h-9 min-w-[17rem] max-w-md flex-1 items-center gap-2.5 px-3.5 text-[12px] text-on-surface transition-colors hover:text-on-surface lg:flex"
       >
-        <SearchIcon />
-        <span className="flex-1 text-left">셀린느, 캐시미어 코트, 가니…</span>
-        <kbd className="ml-auto inline-flex items-center px-1.5 text-[10px] font-medium tracking-[0.18em] text-on-surface-variant border border-outline-variant/80">
+        <SparklesIcon className="h-[18px] w-[18px] shrink-0 text-[var(--color-ai-bright)]" />
+        <span className="flex-1 truncate text-left text-on-surface-variant">
+          브랜드·스타일·가격대를 입력해 보세요…
+        </span>
+        <kbd className="ml-auto hidden shrink-0 items-center px-1.5 font-sans text-[10px] font-medium tracking-[0.14em] text-[var(--color-ai)]/80 sm:inline-flex">
           ⌘K
         </kbd>
       </Link>
 
-      {/* Mobile search trigger — 아이콘만 */}
+      {/* Mobile — AI 검색 진입 */}
       <Link
         href="/search"
-        aria-label="검색"
-        className="flex h-8 w-8 items-center justify-center lg:hidden"
+        aria-label="AI 검색"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-indigo-200/70 bg-gradient-to-br from-surface-bright to-[var(--color-ai-surface)] text-[var(--color-ai)] shadow-[0_2px_10px_rgba(49,46,129,0.12)] transition-transform active:scale-95 lg:hidden"
       >
-        <SearchIcon />
+        <SparklesIcon className="h-[18px] w-[18px]" />
       </Link>
 
       {/* SAVED — 데스크톱은 텍스트, 모바일은 아이콘 */}
@@ -215,20 +218,6 @@ function BackIcon() {
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.4" />
-      <path
-        d="m16.5 16.5 3.5 3.5"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
       />
     </svg>
   );

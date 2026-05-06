@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SparklesIcon } from "@/components/ui/SparklesIcon";
+import { cn } from "@/lib/utils";
 
 /**
  * 모바일 한정 BottomNav.
  *
  * 변경 의도:
  *  - 데스크톱(lg+)에서는 TopBar의 horizontal nav가 1차 nav 책임을 지므로 hidden.
- *  - 가운데 floating FAB(검은 원 + 카메라 = AI 검색) 제거 → 검색은 TopBar로 이관.
- *    FAB은 instagram/배민/쿠팡 정확한 시그니처라 platform 톤과 충돌이 컸다.
- *  - 4탭 균등(`HOME / FEED / SAVED / ME`) — 균질한 hairline 그리드.
- *  - 활성 표시는 색이 아닌 상단 1px 라인으로 — 잡지의 page rule 느낌.
+ *  - 가운데 floating FAB는 쓰지 않고, 동일 높이 5탭 그리드로 AI 검색(/search)을 중앙에 둔다.
+ *  - 활성 표시는 색이 아닌 상단 1px 라인 — 잡지의 page rule 느낌.
  */
 
 type NavItem = {
@@ -35,6 +35,12 @@ const NAV_ITEMS: readonly NavItem[] = [
     match: (p) => p.startsWith("/feed"),
   },
   {
+    href: "/search",
+    label: "AI",
+    icon: <SparklesIcon />,
+    match: (p) => p.startsWith("/search"),
+  },
+  {
     href: "/saved",
     label: "SAVED",
     icon: <BookmarkIcon />,
@@ -56,7 +62,7 @@ export function BottomNav() {
       aria-label="Primary"
       className="bottom-nav fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-outline-variant bg-surface/95 backdrop-blur-md sm:max-w-[720px] lg:hidden"
     >
-      <ul className="grid h-14 grid-cols-4">
+      <ul className="grid h-14 grid-cols-5">
         {NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           return (
@@ -70,10 +76,14 @@ export function BottomNav() {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={
-                  "flex h-full flex-col items-center justify-center gap-1 text-[10px] tracking-[0.22em] transition-colors " +
-                  (active ? "text-on-surface" : "text-on-surface-variant")
-                }
+                className={cn(
+                  "flex h-full flex-col items-center justify-center gap-1 text-[10px] tracking-[0.22em] transition-colors",
+                  !active && "text-on-surface-variant",
+                  active &&
+                    (item.href === "/search"
+                      ? "text-[var(--color-ai)]"
+                      : "text-on-surface")
+                )}
               >
                 <span className="h-[20px]">{item.icon}</span>
                 <span>{item.label}</span>

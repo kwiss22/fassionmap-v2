@@ -38,8 +38,12 @@ export default function MePage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setPrefs(loadPrefs());
-    setMounted(true);
+    // Hydration: 서버 첫 페인트는 DEFAULTS, 마운트 후 localStorage 반영.
+    const id = requestAnimationFrame(() => {
+      setPrefs(loadPrefs());
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(id);
   }, []);
 
   function update<K extends keyof Prefs>(key: K, value: Prefs[K]) {
