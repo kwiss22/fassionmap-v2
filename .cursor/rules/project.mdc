@@ -1,0 +1,20 @@
+---
+description: 패션맵 v2 — 학습 프로젝트 작업 규칙
+alwaysApply: true
+---
+
+이 프로젝트는 학습·포트폴리오용. 작업 시작 전 반드시:
+
+1. @docs/PRD.md (제품 정체성, 범위)
+2. @AGENTS.md (작업 규칙, 보안, AI 통합)
+3. @docs/SPRINTS.md (현재 Sprint 작업 순서)
+
+위 3개 파일은 *모든 응답 전*에 우선 참조.
+
+핵심 룰:
+
+- Next.js 16 + React 19 + Tailwind v4. 옛 패턴 (pages/, getServerSideProps, Tailwind v3 config 등) 절대 사용 금지.
+- AI SDK (@google/generative-ai) 직접 import는 lib/ai/providers/gemini.ts 안에서만.
+- 한 번에 파일 1개씩 만들고 멈춰서 보여줄 것. 여러 파일 한꺼번에 갈기지 말기.
+- 새 라이브러리 추가는 의심부터 — 진짜 필요한지 1개씩 정당화.
+- API 키는 절대 클라이언트 노출 X. NEXT_PUBLIC_ 사용 금지.
