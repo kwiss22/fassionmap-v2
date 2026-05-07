@@ -16,6 +16,8 @@ type Props = {
   loading?: boolean;
   /** AI 라벨 노출 여부(aieybrow 필과 나란히) */
   isAi?: boolean;
+  /** 인-page 앵커 id (Atlas «View edit» 스크롤 타깃). sticky 헤더 오프셋 포함 */
+  sectionId?: string;
 };
 
 export function EditorialSection({
@@ -27,9 +29,16 @@ export function EditorialSection({
   items,
   loading,
   isAi,
+  sectionId,
 }: Props) {
   return (
-    <section className="px-5 py-8">
+    <section
+      id={sectionId}
+      className={cn(
+        "px-5 py-8",
+        sectionId && "scroll-mt-28 md:scroll-mt-32"
+      )}
+    >
       <header className="mb-5 flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">

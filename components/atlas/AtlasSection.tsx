@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { CITIES, getCityBySlug, getCityPieceCount } from "@/lib/cities";
 import { getBrandBySlug } from "@/lib/brands";
+import { getAtlasCityCtaHref } from "@/lib/atlas-cta";
 
 // d3-geo가 server/client에서 부동소수점 정밀도 차이로 path string 미세하게
 // 다르게 만들어 hydration mismatch 발생 → client-only 렌더로 회피.
@@ -106,6 +108,26 @@ export function AtlasSection({ defaultCitySlug = "paris" }: { defaultCitySlug?: 
   );
 }
 
+function AtlasCityCta({ citySlug, label }: { citySlug: string; label: string }) {
+  const href = getAtlasCityCtaHref(citySlug);
+  const className =
+    "mt-7 inline-flex h-11 w-full items-center justify-center border border-on-surface text-[12px] font-medium tracking-[0.22em] uppercase transition-colors hover:bg-on-surface hover:text-on-primary-container";
+
+  if (href.startsWith("#")) {
+    return (
+      <a href={href} className={className}>
+        View {label} Edit &rarr;
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className}>
+      View {label} Edit &rarr;
+    </Link>
+  );
+}
+
 function CityPanel({ city }: { city: ReturnType<typeof getCityBySlug> }) {
   if (!city) return null;
   const pieceCount = getCityPieceCount(city.slug);
@@ -147,13 +169,8 @@ function CityPanel({ city }: { city: ReturnType<typeof getCityBySlug> }) {
         ))}
       </div>
 
-      {/* CTA */}
-      <a
-        href={`#city-${city.slug}`}
-        className="mt-7 inline-flex h-11 w-full items-center justify-center border border-on-surface text-[12px] font-medium tracking-[0.22em] uppercase transition-colors hover:bg-on-surface hover:text-on-primary-container"
-      >
-        View {city.displayName} Edit &rarr;
-      </a>
+      {/* CTA — 홈 이슈 브랜드 섹션 앵커 또는 검색 */}
+      <AtlasCityCta citySlug={city.slug} label={city.displayName} />
     </aside>
   );
 }

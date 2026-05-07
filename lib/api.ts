@@ -168,11 +168,7 @@ function applyListingPolicy(candidates: ScoredProduct[]): Product[] {
   // boostedFirst 단계에서 이미 부스트가 앞에 있지만, 가독성을 위해 한 번 더 stable sort.
   kept.sort((a, b) => Number(b._boosted) - Number(a._boosted));
 
-  return kept.map((item) => {
-    const next = { ...item };
-    delete (next as ScoredProduct & { _boosted?: boolean })._boosted;
-    return next as Product;
-  });
+  return kept.map(({ _boosted, ...rest }) => rest);
 }
 
 function clampDisplay(display: number | undefined): number {

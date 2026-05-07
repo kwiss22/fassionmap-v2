@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { TopBar } from "@/components/layout/TopBar";
 import { HeroCover } from "@/components/home/HeroCover";
+import { AtlasSection } from "@/components/atlas/AtlasSection";
 import { TickerBar } from "@/components/home/TickerBar";
 import { EditorialSection } from "@/components/home/EditorialSection";
 import { BrandIndex } from "@/components/home/BrandIndex";
@@ -17,30 +17,14 @@ export default function Home() {
       <TopBar />
       <HeroCover issue={CURRENT_ISSUE} />
 
-      {/* 임시 미리보기 진입점 — Atlas 섹션 본 통합 시 제거 */}
-      <Link
-        href="/atlas-preview"
-        className="group flex items-center justify-between gap-4 border-y border-outline-variant bg-surface-bright/40 px-5 py-3 transition-colors hover:bg-surface-bright lg:px-10"
-      >
-        <span className="flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase">
-          <span className="border border-on-surface px-1.5 py-0.5 font-medium">
-            Preview
-          </span>
-          <span className="text-on-surface-variant">The&nbsp;Atlas</span>
-          <span className="hidden text-on-surface sm:inline">
-            — Where fashion is being made.
-          </span>
-        </span>
-        <span className="text-[12px] tracking-[0.2em] uppercase transition-transform group-hover:translate-x-1">
-          View &rarr;
-        </span>
-      </Link>
+      <AtlasSection />
 
       <TickerBar items={CURRENT_ISSUE.tickerItems} />
 
       {sections.map(({ section, items, loading }) => (
         <EditorialSection
           key={section.id}
+          sectionId={section.id}
           eyebrow={section.eyebrow}
           title={section.title}
           titleHighlight={section.titleHighlight}
