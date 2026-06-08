@@ -128,13 +128,13 @@ function DefaultActions() {
     <>
       {/* Desktop persistent search — ⌘K 단축키 컨벤션을 시각적으로 차용 */}
       <Link
-        href="/search"
-        aria-label="AI 검색"
+        href="/#styling-agent"
+        aria-label="AI 스타일링"
         className="ai-search-trigger hidden h-9 min-w-[17rem] max-w-md flex-1 items-center gap-2.5 px-3.5 text-[12px] text-on-surface transition-colors hover:text-on-surface lg:flex"
       >
         <SparklesIcon className="h-[18px] w-[18px] shrink-0 text-[var(--color-ai-bright)]" />
         <span className="flex-1 truncate text-left text-on-surface-variant">
-          브랜드·스타일·가격대를 입력해 보세요…
+          오늘 입을 룩, AI에게 물어보기…
         </span>
         <kbd className="ml-auto hidden shrink-0 items-center px-1.5 font-sans text-[10px] font-medium tracking-[0.14em] text-[var(--color-ai)]/80 sm:inline-flex">
           ⌘K
@@ -143,8 +143,8 @@ function DefaultActions() {
 
       {/* Mobile — AI 검색 진입 */}
       <Link
-        href="/search"
-        aria-label="AI 검색"
+        href="/#styling-agent"
+        aria-label="AI 스타일링"
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-indigo-200/70 bg-gradient-to-br from-surface-bright to-[var(--color-ai-surface)] text-[var(--color-ai)] shadow-[0_2px_10px_rgba(49,46,129,0.12)] transition-transform active:scale-95 lg:hidden"
       >
         <SparklesIcon className="h-[18px] w-[18px]" />
@@ -174,13 +174,13 @@ function DefaultActions() {
         )}
       </Link>
 
-      {/* ME */}
+      {/* My */}
       <Link
         href="/me"
-        aria-label="내 계정"
+        aria-label="마이"
         className="flex h-8 w-8 items-center justify-center border border-on-surface text-[11px] font-medium tracking-[0.22em]"
       >
-        ME
+        MY
       </Link>
     </>
   );
@@ -189,23 +189,28 @@ function DefaultActions() {
 const DESKTOP_NAV: { href: string; label: string; match: (p: string) => boolean }[] = [
   {
     href: "/",
-    label: "Editorial",
+    label: "Home",
     match: (p) => p === "/",
   },
   {
     href: "/feed",
     label: "Feed",
-    match: (p) => p.startsWith("/feed") && !p.startsWith("/feed/discover"),
+    match: (p) => p.startsWith("/feed"),
   },
   {
-    href: "/feed/discover",
+    href: "/brands",
     label: "Brands",
-    match: (p) => p.startsWith("/feed/discover"),
+    match: (p) => p.startsWith("/brands"),
   },
   {
     href: "/saved",
     label: "Saved",
     match: (p) => p.startsWith("/saved"),
+  },
+  {
+    href: "/me",
+    label: "My",
+    match: (p) => p.startsWith("/me"),
   },
 ];
 

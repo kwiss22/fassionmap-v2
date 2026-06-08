@@ -35,11 +35,11 @@ export function StatusStrip() {
         </div>
         <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 sm:flex-nowrap">
           <Link
-            href="/search"
+            href="/#styling-agent"
             className="inline-flex shrink-0 items-center gap-1 rounded-full border border-indigo-200/70 bg-[var(--color-ai-surface)] px-2 py-0.5 text-[9px] font-medium tracking-[0.12em] text-[var(--color-ai)] transition-colors hover:border-indigo-300"
           >
             <SparklesIcon className="h-2.5 w-2.5 shrink-0 opacity-90" />
-            AI 검색
+            AI 스타일링
           </Link>
           <span aria-hidden className="hidden opacity-50 sm:inline">
             ·

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { cn } from "@/lib/utils";
 
 /**
@@ -10,7 +9,7 @@ import { cn } from "@/lib/utils";
  *
  * 변경 의도:
  *  - 데스크톱(lg+)에서는 TopBar의 horizontal nav가 1차 nav 책임을 지므로 hidden.
- *  - 가운데 floating FAB는 쓰지 않고, 동일 높이 5탭 그리드로 AI 검색(/search)을 중앙에 둔다.
+ *  - Home / Feed / Brands / Saved / My — AI 스타일링은 홈에서, 브랜드는 Brands 탭.
  *  - 활성 표시는 색이 아닌 상단 1px 라인 — 잡지의 page rule 느낌.
  */
 
@@ -35,10 +34,10 @@ const NAV_ITEMS: readonly NavItem[] = [
     match: (p) => p.startsWith("/feed"),
   },
   {
-    href: "/search",
-    label: "AI",
-    icon: <SparklesIcon />,
-    match: (p) => p.startsWith("/search"),
+    href: "/brands",
+    label: "BRANDS",
+    icon: <BrandsIcon />,
+    match: (p) => p.startsWith("/brands"),
   },
   {
     href: "/saved",
@@ -48,7 +47,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   },
   {
     href: "/me",
-    label: "ME",
+    label: "MY",
     icon: <UserIcon />,
     match: (p) => p.startsWith("/me"),
   },
@@ -79,10 +78,7 @@ export function BottomNav() {
                 className={cn(
                   "flex h-full flex-col items-center justify-center gap-1 text-[10px] tracking-[0.22em] transition-colors",
                   !active && "text-on-surface-variant",
-                  active &&
-                    (item.href === "/search"
-                      ? "text-[var(--color-ai)]"
-                      : "text-on-surface")
+                  active && "text-on-surface"
                 )}
               >
                 <span className="h-[20px]">{item.icon}</span>
@@ -126,6 +122,19 @@ function BookmarkIcon() {
         stroke="currentColor"
         strokeWidth="1.4"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function BrandsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 7h16M4 12h16M4 17h10"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
       />
     </svg>
   );

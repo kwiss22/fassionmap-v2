@@ -1,3 +1,5 @@
+export type ProductSource = "naver" | "aliexpress";
+
 export type Product = {
   id: string;
   name: string;
@@ -8,6 +10,8 @@ export type Product = {
   imageUrl: string;
   link: string;
   category2?: string;
+  /** 데이터 출처 (미지정 시 네이버 쇼핑으로 간주) */
+  source?: ProductSource;
 };
 
 /**

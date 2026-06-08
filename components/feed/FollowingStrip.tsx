@@ -35,7 +35,7 @@ export function FollowingStrip() {
           ))
         )}
         <Link
-          href="/feed/discover"
+          href="/brands"
           className="pill-tag shrink-0 border-primary bg-primary text-on-primary"
         >
           + DISCOVER

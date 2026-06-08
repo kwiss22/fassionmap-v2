@@ -142,7 +142,7 @@ export function FollowedFeed() {
           {displayItems.length}{" "}
           {displayItems.length === 1 ? "ITEM" : "ITEMS"}
         </span>
-        <Link href="/feed/discover" className="underline-link eyebrow-bold">
+        <Link href="/brands" className="underline-link eyebrow-bold">
           DISCOVER →
         </Link>
       </div>

@@ -56,7 +56,7 @@ export default function MePage() {
 
   return (
     <main className="min-h-[100dvh] bg-surface text-on-surface">
-      <TopBar title="Me" showStatusStrip={false} />
+      <TopBar title="My" showStatusStrip={false} />
 
       <section className="px-5 pt-8">
         <div className="flex items-center gap-4">
@@ -64,16 +64,16 @@ export default function MePage() {
             <span className="editorial-serif text-[22px] italic">F</span>
           </div>
           <div>
-            <p className="editorial-display text-[22px]">Editor preview</p>
-            <p className="text-[12px] text-on-surface-variant">
-              로그인 전 · 익명 세션
+            <p className="editorial-display text-[22px]">My Fashionmap</p>
+            <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">
+              가격 알림·표시 방식을 취향에 맞게 조정해 보세요.
             </p>
           </div>
         </div>
       </section>
 
       <section className="mt-10 px-5">
-        <p className="eyebrow">PREFERENCES</p>
+        <p className="eyebrow">보기 설정</p>
         <ul className="mt-4 divide-y divide-outline-variant border-y border-outline-variant">
           <Toggle
             label="가격 인하 알림"
@@ -120,10 +120,6 @@ export default function MePage() {
           <li className="flex justify-between border-b border-outline-variant/70 pb-3">
             <span>버전</span>
             <span className="text-on-surface-variant">0.2.0 · Editorial</span>
-          </li>
-          <li className="flex justify-between border-b border-outline-variant/70 pb-3">
-            <span>제휴 프로그램</span>
-            <span className="text-on-surface-variant">LinkPrice</span>
           </li>
         </ul>
       </section>
