@@ -21,7 +21,7 @@ export function FollowingStrip() {
       <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto px-5 py-4">
         {brands.length === 0 ? (
           <p className="text-[12px] text-on-surface-variant">
-            아직 팔로우한 브랜드가 없어요.
+            No brands followed yet.
           </p>
         ) : (
           brands.map((brand) => (

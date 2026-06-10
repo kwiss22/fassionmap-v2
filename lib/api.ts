@@ -117,6 +117,7 @@ function mapNaverItemsToProducts(
       imageUrl: item.image,
       link: item.link,
       category2: item.category2 || "",
+      source: "naver",
       _boosted: isBoostedMall(item.mallName),
     };
   });

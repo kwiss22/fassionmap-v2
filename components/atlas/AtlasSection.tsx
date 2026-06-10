@@ -51,8 +51,8 @@ export function AtlasSection({ defaultCitySlug = "paris" }: { defaultCitySlug?: 
               <span className="italic">is being made.</span>
             </h2>
             <p className="mt-4 max-w-md text-[14px] text-on-surface-variant">
-              이번 주, {CITIES.length}개 도시에서. 점을 눌러 그 도시의 큐레이션을
-              펼쳐보세요.
+              This week, from {CITIES.length} cities. Tap a dot to open that
+              city&apos;s edit.
             </p>
 
             {/* 지도 */}

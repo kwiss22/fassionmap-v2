@@ -26,7 +26,7 @@ export function FeedClient() {
           Your feed.
         </h2>
         <p className="mt-2 text-[13px] text-on-surface-variant">
-          팔로우한 {items.length}개 브랜드의 신상·셀렉션을 이어 봅니다.
+          New arrivals and selections from {items.length} brands you follow.
         </p>
       </section>
       <div className="mt-4">

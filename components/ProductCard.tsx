@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type Product, productToDetailHref } from "@/lib/product";
-import { formatKrwAmount, cn } from "@/lib/utils";
+import { formatAmount, productDisplayCurrency } from "@/lib/price";
+import { cn } from "@/lib/utils";
 import { HeartToggle } from "@/components/ui/HeartToggle";
 import { MallBadge, formatMallDisplay } from "@/components/product/MallBadge";
 import { extractBrand } from "@/lib/brand-extract";
@@ -51,6 +52,13 @@ export function ProductCard({
   // 무명 셀러는 노출 자체가 신뢰도 손해.
   const showMallBadge =
     !!product.mallName && isBoostedMall(product.mallName);
+
+  const currency = productDisplayCurrency(product);
+  const priceLabel = formatAmount(product.price, currency);
+  const originalLabel =
+    typeof originalPrice === "number" && originalPrice > product.price
+      ? formatAmount(originalPrice, currency)
+      : null;
 
   return (
     <article className={cn("group relative flex flex-col", className)}>
@@ -102,7 +110,7 @@ export function ProductCard({
         )}
       </Link>
 
-      <div className="mt-3 space-y-1">
+      <div className="mt-4 space-y-1">
         {eyebrow && <p className="eyebrow truncate">{eyebrow}</p>}
         <Link
           href={detailHref}
@@ -112,15 +120,12 @@ export function ProductCard({
           {product.name}
         </Link>
         <div className="flex items-baseline gap-2 pt-1 text-[13px] tabular-nums">
-          <span className="font-medium text-on-surface">
-            ₩{formatKrwAmount(product.price)}
-          </span>
-          {typeof originalPrice === "number" &&
-            originalPrice > product.price && (
-              <span className="text-[11px] text-on-surface-variant line-through">
-                ₩{formatKrwAmount(originalPrice)}
-              </span>
-            )}
+          <span className="font-medium text-on-surface">{priceLabel}</span>
+          {originalLabel && (
+            <span className="text-[11px] text-on-surface-variant line-through">
+              {originalLabel}
+            </span>
+          )}
         </div>
       </div>
     </article>

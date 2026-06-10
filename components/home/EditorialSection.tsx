@@ -68,7 +68,7 @@ export function EditorialSection({
         <SectionSkeleton />
       ) : items.length === 0 ? (
         <p className="py-6 text-center text-[12px] text-on-surface-variant">
-          이 섹션은 곧 업데이트됩니다.
+          This section is updating soon.
         </p>
       ) : (
         <div

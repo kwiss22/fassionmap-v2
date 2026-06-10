@@ -6,60 +6,72 @@ import { productDedupeKey } from "@/lib/product";
 import { useHomeFeed } from "@/lib/hooks/use-home-feed";
 
 /**
- * 홈 에디토리얼 티저 — 브랜드 감도만 유지, 1테마 + 소수 아이템
- * (Maison / Brand index / Atlas 는 /brands 로 이동)
+ * 홈 브랜드 에딧 — 상품 그리드 중심, 대표 이미지 + 썸네일 열.
  */
 export function EditorialTeaserSection() {
   const { sections } = useHomeFeed();
   const theme = sections.find((s) => s.section.id === "theme-cashmere");
   const items = (theme?.items ?? []).slice(0, 3);
   const loading = theme?.loading ?? true;
+  const hero = items[0];
+  const thumbs = items.slice(1);
 
   return (
-    <section className="border-t border-outline-variant/70 bg-surface-bright/30 px-5 py-10 lg:px-10 lg:py-12">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">THIS WEEK&apos;S EDIT</p>
-          <h2 className="editorial-display mt-2 text-[26px] leading-tight">
-            From the <em className="italic">brands</em>
-          </h2>
-          <p className="mt-2 text-[13px] text-on-surface-variant">
-            브랜드 큐레이션은 홈이 아닌 Brands에서 깊게 탐색하세요.
-          </p>
-        </div>
-        <Link href="/brands" className="eyebrow-bold shrink-0 underline-link">
+    <section className="border-t border-outline-variant/30 bg-surface-bright/30 px-5 py-16 lg:px-10 lg:py-24">
+      <div className="flex items-center justify-between gap-4 border-b border-on-surface/10 pb-4">
+        <span className="text-[11px] font-medium tracking-[0.26em] text-on-surface">
+          {theme?.section.eyebrow ?? "THIS WEEK'S EDIT"}
+        </span>
+        <Link
+          href="/brands"
+          className="text-[11px] tracking-[0.22em] text-on-surface-variant uppercase underline-link"
+        >
           Brands →
         </Link>
       </div>
 
-      {theme && (
-        <p className="mt-4 text-[12px] text-on-surface-variant">
-          {theme.section.subtitle ?? theme.section.title}
+      <h2 className="mt-6 font-playfair text-[24px] leading-tight text-on-surface sm:text-[28px]">
+        {theme?.section.title ?? "The cashmere edit"}
+      </h2>
+      {theme?.section.subtitle ? (
+        <p className="mt-2 max-w-lg text-[13px] text-on-surface-variant">
+          {theme.section.subtitle}
         </p>
-      )}
+      ) : null}
 
       {loading && items.length === 0 ? (
-        <div className="mt-6 grid grid-cols-3 gap-3">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="silhouette-bg aspect-[4/5] animate-pulse"
-            />
-          ))}
+        <div className="mt-8 grid grid-cols-12 gap-4 lg:gap-6">
+          <div className="silhouette-bg col-span-12 aspect-[4/5] animate-pulse sm:col-span-7" />
+          <div className="col-span-12 flex flex-col gap-4 sm:col-span-5">
+            <div className="silhouette-bg aspect-[4/5] animate-pulse" />
+            <div className="silhouette-bg aspect-[4/5] animate-pulse" />
+          </div>
         </div>
       ) : items.length === 0 ? (
-        <p className="mt-6 text-[13px] text-on-surface-variant">
-          이번 주 에디트를 준비 중입니다.
+        <p className="mt-8 text-[13px] text-on-surface-variant">
+          This week&apos;s edit is on the way.
         </p>
       ) : (
-        <div className="mt-6 grid grid-cols-3 gap-3">
-          {items.map((product, i) => (
-            <ProductCard
-              key={productDedupeKey(product)}
-              product={product}
-              priority={i === 0}
-            />
-          ))}
+        <div className="mt-8 grid grid-cols-12 gap-4 lg:mt-10 lg:gap-6">
+          {hero ? (
+            <div className="col-span-12 sm:col-span-7">
+              <ProductCard
+                key={productDedupeKey(hero)}
+                product={hero}
+                priority
+              />
+            </div>
+          ) : null}
+          {thumbs.length > 0 ? (
+            <div className="col-span-12 flex flex-col gap-4 sm:col-span-5 sm:gap-5">
+              {thumbs.map((product) => (
+                <ProductCard
+                  key={productDedupeKey(product)}
+                  product={product}
+                />
+              ))}
+            </div>
+          ) : null}
         </div>
       )}
     </section>

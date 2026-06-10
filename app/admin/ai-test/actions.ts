@@ -39,7 +39,7 @@ const SAMPLE_PRODUCTS: CurationInput["candidateProducts"] = [
   {
     id: "p-1",
     name: "Hermes cashmere coat",
-    mall: "네이버",
+    mall: "Naver",
     mallName: "Hermes Official",
     price: 1200000,
     imageUrl: "https://example.com/p1.jpg",
@@ -48,7 +48,7 @@ const SAMPLE_PRODUCTS: CurationInput["candidateProducts"] = [
   {
     id: "p-2",
     name: "Minimal wool knit",
-    mall: "네이버",
+    mall: "Naver",
     mallName: "W Concept",
     price: 210000,
     imageUrl: "https://example.com/p2.jpg",
@@ -57,7 +57,7 @@ const SAMPLE_PRODUCTS: CurationInput["candidateProducts"] = [
   {
     id: "p-3",
     name: "Neutral tone wide slacks",
-    mall: "네이버",
+    mall: "Naver",
     mallName: "29CM",
     price: 159000,
     imageUrl: "https://example.com/p3.jpg",
@@ -91,7 +91,7 @@ export async function generateIssueDraftAction(
     trendSignals,
     candidateProducts: SAMPLE_PRODUCTS,
     maxSections: 3,
-    locale: "ko-KR",
+    locale: "en-US",
   };
 
   let payload: ActionResult;
@@ -105,7 +105,7 @@ export async function generateIssueDraftAction(
     payload = { ok: true, data };
   } catch (e) {
     if (e instanceof ZodError) {
-      const msg = e.issues.map((i) => i.message).join("; ") || "Zod 검증 실패";
+      const msg = e.issues.map((i) => i.message).join("; ") || "Zod validation failed";
       payload = { ok: false, error: msg };
     } else if (e instanceof Error) {
       payload = { ok: false, error: e.message };

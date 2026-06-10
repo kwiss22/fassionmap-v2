@@ -1,5 +1,6 @@
 import type { SortKey } from "@/lib/api";
 import { signTopMd5, topApiTimestamp } from "@/lib/aliexpress/sign";
+import { APP_MARKET } from "@/lib/market";
 import type { Product } from "@/lib/product";
 
 /** AliExpress Affiliate 앱은 Taobao eco 게이트웨이가 아닌 SG sync 엔드포인트를 씁니다. */
@@ -52,9 +53,13 @@ function mapAliSort(sort: SortKey): string {
 
 function parsePrice(raw: AliRawProduct): number {
   const target = Number(raw.target_sale_price);
-  if (Number.isFinite(target) && target > 0) return Math.round(target);
+  if (Number.isFinite(target) && target > 0) {
+    return Math.round(target * 100) / 100;
+  }
   const sale = Number(raw.sale_price);
-  if (Number.isFinite(sale) && sale > 0) return Math.round(sale);
+  if (Number.isFinite(sale) && sale > 0) {
+    return Math.round(sale * 100) / 100;
+  }
   return 0;
 }
 
@@ -136,9 +141,9 @@ export async function fetchAliexpressProductsPage(
     page_no: String(pageNo),
     page_size: String(pageSize),
     sort: mapAliSort(options.sort ?? "sim"),
-    target_currency: "KRW",
-    target_language: "KO",
-    ship_to_country: "KR",
+    target_currency: APP_MARKET.aliexpress.targetCurrency,
+    target_language: APP_MARKET.aliexpress.targetLanguage,
+    ship_to_country: APP_MARKET.aliexpress.shipToCountry,
     fields:
       "product_id,product_title,product_main_image_url,promotion_link,product_detail_url,target_sale_price,sale_price,shop_name,first_level_category_name",
   };

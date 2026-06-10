@@ -129,7 +129,7 @@ export function FollowedFeed() {
           No items to show yet.
         </p>
         <p className="mt-2 text-[13px] text-on-surface-variant">
-          팔로우한 브랜드에 노출할 상품이 없어요. 잠시 후 다시 시도해 주세요.
+          No products from followed brands right now. Try again in a moment.
         </p>
       </div>
     );

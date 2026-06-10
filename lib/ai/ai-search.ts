@@ -1,4 +1,5 @@
 import { fetchNaverProductsPage } from "@/lib/api";
+import { APP_MARKET } from "@/lib/market";
 import {
   buildCelebritySearchPlan,
   buildContentSearchQuery,
@@ -33,27 +34,56 @@ type CurateAiSearchOptions = Partial<GenerateIssueOptions> & {
   useCache?: boolean;
 };
 
-function buildFallbackPlan(prompt: string): AiSearchPlan {
-  const celebrityPlan = buildCelebritySearchPlan(prompt);
+function buildFallbackPlan(prompt: string, locale?: string): AiSearchPlan {
+  const resolvedLocale = locale ?? APP_MARKET.locale;
+  const en = resolvedLocale === "en-US";
+
+  const celebrityPlan = buildCelebritySearchPlan(prompt, resolvedLocale);
   if (celebrityPlan) {
     return celebrityPlan;
   }
 
-  const trimmed = prompt.trim().slice(0, 60) || "패션 추천";
+  const trimmed = prompt.trim().slice(0, 60) || (en ? "fashion picks" : "패션 추천");
   const words = trimmed.split(/\s+/).filter(Boolean);
   const q1 = words.slice(0, 3).join(" ") || trimmed;
 
   return {
-    summary: `"${trimmed}"에 맞춰 쇼핑 가능한 키워드로 나눠 골랐습니다.`,
+    summary: en
+      ? `Split "${trimmed}" into shoppable search keywords.`
+      : `"${trimmed}"에 맞춰 쇼핑 가능한 키워드로 나눠 골랐습니다.`,
     searches: [
-      { query: `${q1} 코디`, intent: "fallback" },
-      { query: "여성 블레이저", intent: "fallback 보조" },
+      {
+        query: en ? `${q1} women outfit` : `${q1} 코디`,
+        intent: "fallback",
+      },
+      {
+        query: en ? "women blazer" : "여성 블레이저",
+        intent: en ? "fallback alt" : "fallback 보조",
+      },
     ],
     picks: [
-      { searchIndex: 0, rank: 0, reason: "첫 검색 상위 — 요청 키워드와 가깝습니다." },
-      { searchIndex: 0, rank: 1, reason: "같은 검색의 대안 피스입니다." },
-      { searchIndex: 1, rank: 0, reason: "보조 검색에서 고른 에디터 픽입니다." },
-      { searchIndex: 1, rank: 1, reason: "스타일을 넓혀 볼 수 있는 옵션입니다." },
+      {
+        searchIndex: 0,
+        rank: 0,
+        reason: en
+          ? "Top result from the first search — closest to your keywords."
+          : "첫 검색 상위 — 요청 키워드와 가깝습니다.",
+      },
+      {
+        searchIndex: 0,
+        rank: 1,
+        reason: en ? "Alternative from the same search." : "같은 검색의 대안 피스입니다.",
+      },
+      {
+        searchIndex: 1,
+        rank: 0,
+        reason: en ? "Editor pick from the secondary search." : "보조 검색에서 고른 에디터 픽입니다.",
+      },
+      {
+        searchIndex: 1,
+        rank: 1,
+        reason: en ? "Option to widen the style range." : "스타일을 넓혀 볼 수 있는 옵션입니다.",
+      },
     ],
   };
 }
@@ -76,8 +106,8 @@ async function resolvePlan(
     try {
       const plan = await provider.generateAiSearchPlan(input, providerOptions);
       const parsed = aiSearchPlanSchema.parse(plan);
-      if (isCelebrityStylePrompt(input.prompt)) {
-        return mergeCelebrityPlan(input.prompt, parsed);
+      if (isCelebrityStylePrompt(input.prompt, input.locale)) {
+        return mergeCelebrityPlan(input.prompt, parsed, input.locale);
       }
       return parsed;
     } catch (error) {
@@ -86,21 +116,23 @@ async function resolvePlan(
   }
 
   void lastError;
-  const fallback = buildFallbackPlan(input.prompt);
+  const fallback = buildFallbackPlan(input.prompt, input.locale);
   return aiSearchPlanSchema.parse(fallback);
 }
 
 function mergeCelebrityPlan(
   prompt: string,
-  llmPlan: AiSearchPlan
+  llmPlan: AiSearchPlan,
+  locale?: string
 ): AiSearchPlan {
-  const expanded = buildCelebritySearchPlan(prompt);
+  const expanded = buildCelebritySearchPlan(prompt, locale);
   if (!expanded) return llmPlan;
 
   const vagueOnly = llmPlan.searches.every(
     (s) =>
       s.query.includes(prompt.trim()) ||
-      /컬렉션\s*의상|파리\s*컬렉션|최근\s*입은\s*옷/.test(s.query)
+      /컬렉션\s*의상|파리\s*컬렉션|최근\s*입은\s*옷/.test(s.query) ||
+      /collection\s*outfit|paris\s*collection|recently\s*wore/i.test(s.query)
   );
   if (!vagueOnly && llmPlan.searches.length >= 2) {
     return llmPlan;
@@ -125,8 +157,11 @@ function mergeCelebrityPlan(
   };
 }
 
-async function fetchRelatedArticles(prompt: string): Promise<AiContentArticle[]> {
-  const query = buildContentSearchQuery(prompt);
+async function fetchRelatedArticles(
+  prompt: string,
+  locale?: string
+): Promise<AiContentArticle[]> {
+  const query = buildContentSearchQuery(prompt, locale);
   const items = await fetchRelatedContent(query);
   return items.map((item) => ({
     title: item.title,
@@ -160,8 +195,10 @@ function pickFromPool(pool: Product[], rank: number): Product | undefined {
 function materializePicks(
   plan: AiSearchPlan,
   pools: Product[][],
+  locale?: string,
   defaultReason?: string
 ): AiSearchResult["items"] {
+  const en = (locale ?? APP_MARKET.locale) === "en-US";
   const seen = new Set<string>();
   const items: AiSearchResult["items"] = [];
 
@@ -175,7 +212,10 @@ function materializePicks(
     seen.add(key);
     items.push({
       product,
-      reason: pick.reason || defaultReason || "큐레이션 조건에 맞는 상품입니다.",
+      reason:
+        pick.reason ||
+        defaultReason ||
+        (en ? "Matches your curation request." : "큐레이션 조건에 맞는 상품입니다."),
     });
   }
 
@@ -186,14 +226,20 @@ function backfillFromPools(
   plan: AiSearchPlan,
   pools: Product[][],
   existing: AiSearchResult["items"],
+  locale?: string,
   target = 4
 ): AiSearchResult["items"] {
+  const en = (locale ?? APP_MARKET.locale) === "en-US";
   const seen = new Set(existing.map((e) => productDedupeKey(e.product)));
   const items = [...existing];
   const fallbackReason =
     plan.summary.length > 0
-      ? `${plan.summary.slice(0, 80)}…와 비슷한 쇼핑 아이템입니다.`
-      : "검색 상위 결과에서 고른 유사 아이템입니다.";
+      ? en
+        ? `Similar shoppable items to: ${plan.summary.slice(0, 80)}…`
+        : `${plan.summary.slice(0, 80)}…와 비슷한 쇼핑 아이템입니다.`
+      : en
+        ? "Top similar items from search results."
+        : "검색 상위 결과에서 고른 유사 아이템입니다.";
 
   for (let si = 0; si < pools.length && items.length < target; si += 1) {
     const pool = pools[si];
@@ -207,7 +253,9 @@ function backfillFromPools(
       items.push({
         product,
         reason: intent
-          ? `${intent} — 쇼핑 검색 상위 픽입니다.`
+          ? en
+            ? `${intent} — top shopping pick.`
+            : `${intent} — 쇼핑 검색 상위 픽입니다.`
           : fallbackReason,
       });
     }
@@ -220,46 +268,49 @@ export async function curateAiSearch(
   input: AiSearchInput,
   options: CurateAiSearchOptions = {}
 ): Promise<AiSearchResult> {
+  const locale = input.locale ?? APP_MARKET.locale;
+  const normalizedInput = { ...input, locale };
+
   const useCache = options.useCache !== false;
   if (useCache) {
-    const cached = getCachedAiSearch(input);
+    const cached = getCachedAiSearch(normalizedInput);
     if (cached) return cached;
   }
 
   const provider = options.provider ?? getLLMProvider();
 
   const [plan, articles] = await Promise.all([
-    resolvePlan(input, options),
-    fetchRelatedArticles(input.prompt),
+    resolvePlan(normalizedInput, options),
+    fetchRelatedArticles(normalizedInput.prompt, locale),
   ]);
 
   let lookBrief = await resolveLookBrief(
     {
-      prompt: input.prompt,
+      prompt: normalizedInput.prompt,
       articles,
       planSummary: plan.summary,
-      locale: input.locale,
+      locale,
     },
     { provider }
   );
 
   let pools = await fetchPools(plan);
-  let items = materializePicks(plan, pools);
+  let items = materializePicks(plan, pools, locale);
 
-  if (items.length === 0 && isCelebrityStylePrompt(input.prompt)) {
-    const celebrityPlan = buildCelebritySearchPlan(input.prompt);
+  if (items.length === 0 && isCelebrityStylePrompt(normalizedInput.prompt, locale)) {
+    const celebrityPlan = buildCelebritySearchPlan(normalizedInput.prompt, locale);
     if (celebrityPlan) {
       const replan = aiSearchPlanSchema.parse(celebrityPlan);
       pools = await fetchPools(replan);
-      items = materializePicks(replan, pools);
+      items = materializePicks(replan, pools, locale);
     }
   }
 
   if (items.length < 4) {
-    items = backfillFromPools(plan, pools, items, 6);
+    items = backfillFromPools(plan, pools, items, locale, 6);
   }
 
-  lookBrief = enrichLookBriefWithShopping(lookBrief, items);
+  lookBrief = enrichLookBriefWithShopping(lookBrief, items, locale);
 
   const result: AiSearchResult = {
     summary: lookBrief.editorialSummary,
@@ -270,7 +321,7 @@ export async function curateAiSearch(
   };
 
   if (useCache && (result.items.length > 0 || result.articles.length > 0)) {
-    setCachedAiSearch(input, result);
+    setCachedAiSearch(normalizedInput, result);
   }
 
   return result;

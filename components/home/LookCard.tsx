@@ -12,85 +12,110 @@ type LookCardProps = {
 export function LookCard({ look, compact = false }: LookCardProps) {
   const pieces = compact ? look.pieces.slice(0, 3) : look.pieces;
   const firstLink = look.pieces.find((p) => p.product)?.product;
+  const heroProduct =
+    look.pieces.find((p) => p.product?.imageUrl)?.product ??
+    look.pieces.find((p) => p.product)?.product;
 
   return (
-    <article className="flex flex-col border border-outline-variant bg-surface-bright/50">
-      <div className="border-b border-outline-variant/70 px-4 py-3">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            {look.context && (
-              <p className="text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">
-                {look.context}
-              </p>
-            )}
-            <h3 className="mt-0.5 text-[15px] font-medium tracking-tight text-on-surface">
-              {look.title}
-            </h3>
-          </div>
-        </div>
-        <p className="mt-2 text-[12px] leading-relaxed text-on-surface-variant">
-          {look.reason}
-        </p>
+    <article className="flex flex-col">
+      <div className="relative aspect-[4/5] w-full overflow-hidden">
+        {heroProduct?.imageUrl ? (
+          <Image
+            src={heroProduct.imageUrl}
+            alt={heroProduct.name}
+            fill
+            sizes="(max-width: 768px) 50vw, 33vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="silhouette-bg absolute inset-0" aria-hidden />
+        )}
       </div>
 
-      <div
-        className={
-          "grid gap-px bg-outline-variant/40 " +
-          (pieces.length <= 3 ? "grid-cols-3" : "grid-cols-2 sm:grid-cols-4")
-        }
-      >
-        {pieces.map((piece) => (
-          <LookPieceCell key={piece.role} label={piece.label} product={piece.product} />
-        ))}
+      <div className="mt-5 flex flex-col gap-2">
+        {look.context && (
+          <p className="eyebrow text-on-surface-variant">{look.context}</p>
+        )}
+        <p className="editorial-display text-[18px] leading-snug text-on-surface sm:text-[20px]">
+          {look.reason}
+        </p>
+        <h3 className="text-[14px] font-medium tracking-[0.06em] text-on-surface-variant uppercase">
+          {look.title}
+        </h3>
       </div>
+
+      {pieces.length > 0 && (
+        <ul className="mt-5 flex gap-3 overflow-x-auto pb-1">
+          {pieces.map((piece) => (
+            <li key={piece.role} className="shrink-0">
+              <LookThumb
+                product={piece.product}
+                label={piece.label}
+                why={look.pieceWhy?.[piece.role]}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
 
       {firstLink && (
         <Link
           href={productToDetailHref(firstLink)}
-          className="border-t border-outline-variant/70 px-4 py-3 text-center text-[11px] font-medium tracking-[0.2em] text-on-surface uppercase transition-colors hover:bg-surface-container"
+          className="underline-link mt-5 inline-block w-fit text-[11px] tracking-[0.2em] text-on-surface uppercase"
         >
-          룩 상세 보기 →
+          View look →
         </Link>
       )}
     </article>
   );
 }
 
-function LookPieceCell({
-  label,
+function LookThumb({
   product,
+  label,
+  why,
 }: {
-  label: string;
   product: StylingLook["pieces"][0]["product"];
+  label: string;
+  why?: string;
 }) {
   const inner = (
-    <div className="relative flex aspect-[3/4] flex-col bg-surface">
+    <div className="relative h-14 w-11 overflow-hidden bg-surface sm:h-[3.5rem] sm:w-14">
       {product?.imageUrl ? (
         <Image
           src={product.imageUrl}
-          alt={product.name}
+          alt={product.name || label}
           fill
-          sizes="120px"
+          sizes="56px"
           className="object-cover"
         />
       ) : (
-        <div className="silhouette-bg flex flex-1 items-center justify-center text-[9px] tracking-[0.16em] text-on-surface-variant uppercase">
-          —
-        </div>
+        <div className="silhouette-bg absolute inset-0" aria-hidden />
       )}
-      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent px-1.5 py-1.5 text-[9px] tracking-[0.14em] text-white uppercase">
-        {label}
-      </span>
     </div>
   );
 
-  if (product) {
-    return (
-      <Link href={productToDetailHref(product)} className="block min-w-0">
-        {inner}
-      </Link>
-    );
-  }
+  const thumb = product ? (
+    <Link
+      href={productToDetailHref(product)}
+      className="block"
+      title={label}
+      aria-label={label}
+    >
+      {inner}
+    </Link>
+  ) : (
+    inner
+  );
 
-  return inner;
+  return (
+    <div className="flex w-24 flex-col gap-1.5 sm:w-28">
+      {thumb}
+      {why ? (
+        <p className="text-[11px] leading-snug text-on-surface-variant">
+          <span className="font-medium text-[var(--color-ai)]">Why</span> {why}
+        </p>
+      ) : null}
+    </div>
+  );
 }

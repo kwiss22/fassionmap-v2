@@ -14,7 +14,7 @@ type Prefs = {
 const DEFAULTS: Prefs = {
   priceDropAlert: true,
   showDuty: true,
-  currency: "KRW",
+  currency: "USD",
 };
 
 function loadPrefs(): Prefs {
@@ -66,25 +66,25 @@ export default function MePage() {
           <div>
             <p className="editorial-display text-[22px]">My Fashionmap</p>
             <p className="mt-1 text-[13px] leading-relaxed text-on-surface-variant">
-              가격 알림·표시 방식을 취향에 맞게 조정해 보세요.
+              Tune price alerts and how prices are displayed.
             </p>
           </div>
         </div>
       </section>
 
       <section className="mt-10 px-5">
-        <p className="eyebrow">보기 설정</p>
+        <p className="eyebrow">DISPLAY</p>
         <ul className="mt-4 divide-y divide-outline-variant border-y border-outline-variant">
           <Toggle
-            label="가격 인하 알림"
-            hint="찜한 상품 가격이 떨어지면 배너로 알려드려요."
+            label="Price drop alerts"
+            hint="Get a banner when a saved item&apos;s price goes down."
             value={prefs.priceDropAlert}
             onChange={(v) => update("priceDropAlert", v)}
             disabled={!mounted}
           />
           <Toggle
-            label="관세·배송비 포함 표시"
-            hint="해외 몰 상품 가격에 예상 관세/배송을 합산해 보여줍니다."
+            label="Include duties & shipping"
+            hint="Show estimated duties and shipping on global marketplace items."
             value={prefs.showDuty}
             onChange={(v) => update("showDuty", v)}
             disabled={!mounted}
@@ -118,7 +118,7 @@ export default function MePage() {
         <p className="eyebrow">ABOUT</p>
         <ul className="mt-4 space-y-3 text-[13px]">
           <li className="flex justify-between border-b border-outline-variant/70 pb-3">
-            <span>버전</span>
+            <span>Version</span>
             <span className="text-on-surface-variant">0.2.0 · Editorial</span>
           </li>
         </ul>

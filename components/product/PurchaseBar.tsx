@@ -13,8 +13,8 @@ export function PurchaseBar({
 }) {
   const mallDisplay = formatMallDisplay(product.mallName ?? product.mall);
   const label = mallDisplay
-    ? `${mallDisplay}에서 구매하기`
-    : "브랜드 스토어에서 구매하기";
+    ? `Shop on ${mallDisplay}`
+    : "Shop brand store";
 
   return (
     <footer className="fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-outline-variant bg-surface/95 px-4 py-3 backdrop-blur-md sm:max-w-[720px] lg:max-w-[1200px]">

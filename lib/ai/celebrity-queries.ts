@@ -1,34 +1,59 @@
+import { APP_MARKET } from "@/lib/market";
 import type { AiSearchPlan, AiSearchPlanSearch } from "@/lib/ai/types";
 
-/** 자주 검색되는 국내·K-pop 셀럽 (부분 일치) */
-const CELEBRITY_KEYWORDS: readonly { name: string; brands: string[] }[] = [
-  { name: "제니", brands: ["샤넬", "CHANEL"] },
-  { name: "지수", brands: ["디올", "Dior"] },
-  { name: "로제", brands: ["입생로랑", "YSL"] },
-  { name: "리사", brands: ["셀린", "Celine"] },
-  { name: "카리나", brands: ["프라다", "Prada"] },
-  { name: "윈터", brands: ["젠틀몬스터", "이미지웨어"] },
-  { name: "장원영", brands: ["미우미우", "Miu Miu"] },
-  { name: "안유진", brands: ["미우미우", "로에베"] },
-  { name: "민지", brands: ["샤넬", "디올"] },
-  { name: "하니", brands: ["구찌", "Gucci"] },
-  { name: "설윤", brands: ["버버리", "Burberry"] },
-  { name: "수지", brands: ["롤렉스", "라네즈"] },
-  { name: "아이유", brands: ["구찌", "에스티로더"] },
-  { name: "태연", brands: ["루이비통", "Louis Vuitton"] },
-  { name: "지드래곤", brands: ["샤넬", "나이키"] },
-  { name: "뷔", brands: ["셀린", "보테가"] },
-  { name: "정국", brands: ["보테가", "Calvin Klein"] },
+type CelebrityEntry = {
+  /** Display name in current locale */
+  label: { en: string; ko: string };
+  /** Substrings to match in user prompt */
+  aliases: string[];
+  brands: string[];
+};
+
+const CELEBRITIES: readonly CelebrityEntry[] = [
+  { label: { en: "Jennie", ko: "제니" }, aliases: ["제니", "jennie"], brands: ["Chanel", "샤넬"] },
+  { label: { en: "Jisoo", ko: "지수" }, aliases: ["지수", "jisoo"], brands: ["Dior", "디올"] },
+  { label: { en: "Rosé", ko: "로제" }, aliases: ["로제", "rose", "rosé"], brands: ["YSL", "입생로랑"] },
+  { label: { en: "Lisa", ko: "리사" }, aliases: ["리사", "lisa"], brands: ["Celine", "셀린"] },
+  { label: { en: "Karina", ko: "카리나" }, aliases: ["카리나", "karina"], brands: ["Prada", "프라다"] },
+  { label: { en: "Winter", ko: "윈터" }, aliases: ["윈터", "winter"], brands: ["Gentle Monster"] },
+  { label: { en: "Wonyoung", ko: "장원영" }, aliases: ["장원영", "wonyoung"], brands: ["Miu Miu", "미우미우"] },
+  { label: { en: "Yujin", ko: "안유진" }, aliases: ["안유진", "yujin"], brands: ["Miu Miu", "Loewe"] },
+  { label: { en: "Minji", ko: "민지" }, aliases: ["민지", "minji"], brands: ["Chanel", "Dior"] },
+  { label: { en: "Hanni", ko: "하니" }, aliases: ["하니", "hanni"], brands: ["Gucci", "구찌"] },
+  { label: { en: "Sullyoon", ko: "설윤" }, aliases: ["설윤", "sullyoon"], brands: ["Burberry"] },
+  { label: { en: "Suzy", ko: "수지" }, aliases: ["수지", "suzy"], brands: ["Gucci"] },
+  { label: { en: "IU", ko: "아이유" }, aliases: ["아이유", "iu"], brands: ["Gucci"] },
+  { label: { en: "Taeyeon", ko: "태연" }, aliases: ["태연", "taeyeon"], brands: ["Louis Vuitton"] },
+  { label: { en: "G-Dragon", ko: "지드래곤" }, aliases: ["지드래곤", "g-dragon", "gd"], brands: ["Chanel", "Nike"] },
+  { label: { en: "V", ko: "뷔" }, aliases: ["뷔", "taehyung"], brands: ["Celine", "Bottega"] },
+  { label: { en: "Jungkook", ko: "정국" }, aliases: ["정국", "jungkook"], brands: ["Bottega", "Calvin Klein"] },
 ];
 
-const CELEBRITY_SIGNAL =
+const CELEBRITY_SIGNAL_KO =
   /연예인|아이돌|셀럽|스타\s*룩|스타\s*스타일|최근\s*입은|입었던|착장|공항\s*패션|무대\s*의상|레드\s*카펫/i;
 
-const EVENT_PARIS = /파리|패션\s*위크|런웨이|컬렉션|PFW|오트\s*쿠튀르/i;
-const EVENT_STAGE = /무대|공연|콘서트|뮤비|MV|무대\s*의상|안무/i;
-const EVENT_AIRPORT = /공항|출국|입국/i;
+const CELEBRITY_SIGNAL_EN =
+  /celebrity|idol|star\s*look|star\s*style|wore|outfit|airport\s*fashion|stage\s*outfit|red\s*carpet/i;
 
-const GARMENT_HINTS: readonly { pattern: RegExp; query: string }[] = [
+const EVENT_PARIS_KO = /파리|패션\s*위크|런웨이|컬렉션|PFW|오트\s*쿠튀르/i;
+const EVENT_PARIS_EN = /paris|fashion\s*week|runway|collection|pfw|couture/i;
+
+const EVENT_STAGE_KO = /무대|공연|콘서트|뮤비|MV|무대\s*의상|안무/i;
+const EVENT_STAGE_EN = /stage|concert|performance|music\s*video|mv/i;
+
+const EVENT_AIRPORT_KO = /공항|출국|입국/i;
+const EVENT_AIRPORT_EN = /airport|departure|arrival/i;
+
+const GARMENT_HINTS_EN: readonly { pattern: RegExp; query: string }[] = [
+  { pattern: /coat|jacket|blazer|outerwear/i, query: "women oversized blazer" },
+  { pattern: /dress|gown|midi/i, query: "women mini dress" },
+  { pattern: /bag|handbag|purse/i, query: "women shoulder bag" },
+  { pattern: /shoe|boot|heel|sneaker|loafer/i, query: "women loafers" },
+  { pattern: /sunglasses|eyewear/i, query: "women sunglasses" },
+  { pattern: /tweed/i, query: "women tweed jacket" },
+];
+
+const GARMENT_HINTS_KO: readonly { pattern: RegExp; query: string }[] = [
   { pattern: /코트|아우터|재킷|블레이저|자켓/, query: "여성 오버사이즈 블레이저" },
   { pattern: /드레스|원피스|미니드레스/, query: "여성 미니드레스" },
   { pattern: /가방|백|핸드백/, query: "여성 숄더백" },
@@ -37,146 +62,208 @@ const GARMENT_HINTS: readonly { pattern: RegExp; query: string }[] = [
   { pattern: /트위드|재킷/, query: "여성 트위드 재킷" },
 ];
 
-function findCelebrity(prompt: string) {
-  return CELEBRITY_KEYWORDS.find((c) => prompt.includes(c.name));
+function isEnglishLocale(locale?: string): boolean {
+  return (locale ?? APP_MARKET.locale) === "en-US";
 }
 
-function garmentQuery(prompt: string): string | null {
-  for (const hint of GARMENT_HINTS) {
+function findCelebrity(prompt: string): CelebrityEntry | undefined {
+  const lower = prompt.toLowerCase();
+  return CELEBRITIES.find((c) =>
+    c.aliases.some((a) => lower.includes(a.toLowerCase().trim()))
+  );
+}
+
+function garmentQuery(prompt: string, locale?: string): string | null {
+  const hints = isEnglishLocale(locale) ? GARMENT_HINTS_EN : GARMENT_HINTS_KO;
+  for (const hint of hints) {
     if (hint.pattern.test(prompt)) return hint.query;
   }
   return null;
 }
 
+function isParisEvent(prompt: string, locale?: string): boolean {
+  return isEnglishLocale(locale)
+    ? EVENT_PARIS_EN.test(prompt)
+    : EVENT_PARIS_KO.test(prompt);
+}
+
+function isStageEvent(prompt: string, locale?: string): boolean {
+  return isEnglishLocale(locale)
+    ? EVENT_STAGE_EN.test(prompt)
+    : EVENT_STAGE_KO.test(prompt);
+}
+
+function isAirportEvent(prompt: string, locale?: string): boolean {
+  return isEnglishLocale(locale)
+    ? EVENT_AIRPORT_EN.test(prompt)
+    : EVENT_AIRPORT_KO.test(prompt);
+}
+
 function buildSearches(
-  celeb: (typeof CELEBRITY_KEYWORDS)[number] | undefined,
-  prompt: string
+  celeb: CelebrityEntry | undefined,
+  prompt: string,
+  locale?: string
 ): AiSearchPlanSearch[] {
+  const en = isEnglishLocale(locale);
   const searches: AiSearchPlanSearch[] = [];
-  const name = celeb?.name;
+  const name = celeb ? (en ? celeb.label.en : celeb.label.ko) : undefined;
   const brand = celeb?.brands[0];
 
   if (name) {
     searches.push({
-      query: `${name} 코디`,
-      intent: "셀럽 착장과 비슷한 쇼핑 키워드",
+      query: en ? `${name} style outfit` : `${name} 코디`,
+      intent: en
+        ? "Shoppable keywords near the celebrity look"
+        : "셀럽 착장과 비슷한 쇼핑 키워드",
     });
     if (brand) {
       searches.push({
-        query: `${name} ${brand}`,
-        intent: "자주 입는 브랜드 톤",
+        query: en ? `${name} ${brand}` : `${name} ${brand}`,
+        intent: en ? "Brand tone they often wear" : "자주 입는 브랜드 톤",
       });
     }
   }
 
-  if (EVENT_PARIS.test(prompt)) {
+  if (isParisEvent(prompt, locale)) {
     searches.push({
-      query: garmentQuery(prompt) ?? "여성 트위드 재킷",
-      intent: "파리·패션위크 런웨이 실루엣",
+      query: garmentQuery(prompt, locale) ?? (en ? "women tweed jacket" : "여성 트위드 재킷"),
+      intent: en ? "Paris runway silhouette" : "파리·패션위크 런웨이 실루엣",
     });
-  } else if (EVENT_STAGE.test(prompt)) {
+  } else if (isStageEvent(prompt, locale)) {
     searches.push({
-      query: garmentQuery(prompt) ?? "여성 스테이지 코디",
-      intent: "무대·퍼포먼스 룩",
+      query: garmentQuery(prompt, locale) ?? (en ? "women stage outfit" : "여성 스테이지 코디"),
+      intent: en ? "Stage performance look" : "무대·퍼포먼스 룩",
     });
-  } else if (EVENT_AIRPORT.test(prompt)) {
+  } else if (isAirportEvent(prompt, locale)) {
     searches.push({
-      query: garmentQuery(prompt) ?? "여성 공항패션 코디",
-      intent: "공항 착장 무드",
+      query: garmentQuery(prompt, locale) ?? (en ? "women airport outfit" : "여성 공항패션 코디"),
+      intent: en ? "Airport off-duty mood" : "공항 착장 무드",
     });
   }
 
-  const garment = garmentQuery(prompt);
+  const garment = garmentQuery(prompt, locale);
   if (garment && !searches.some((s) => s.query === garment)) {
-    searches.push({ query: garment, intent: "요청하신 아이템군" });
+    searches.push({
+      query: garment,
+      intent: en ? "Requested garment category" : "요청하신 아이템군",
+    });
   }
 
   if (searches.length === 0) {
-    const token = prompt.replace(/의상|옷|룩|착장|컬렉션|패션/g, " ").trim();
-    const q = token.slice(0, 24) || "여성 코디";
-    searches.push({ query: `${q} 코디`, intent: "확장 검색" });
-    searches.push({ query: "여성 블레이저", intent: "기본 에디터 픽" });
+    const token = en
+      ? prompt.replace(/\b(outfit|look|style|fashion|wear)\b/gi, " ").trim()
+      : prompt.replace(/의상|옷|룩|착장|컬렉션|패션/g, " ").trim();
+    const q = token.slice(0, 32) || (en ? "women outfit" : "여성 코디");
+    searches.push({
+      query: en ? `${q} women` : `${q} 코디`,
+      intent: en ? "Expanded search" : "확장 검색",
+    });
+    searches.push({
+      query: en ? "women blazer" : "여성 블레이저",
+      intent: en ? "Editor baseline pick" : "기본 에디터 픽",
+    });
   }
 
   return searches.slice(0, 3);
 }
 
-function buildPicks(searchCount: number): AiSearchPlan["picks"] {
+function buildPicks(searchCount: number, locale?: string): AiSearchPlan["picks"] {
+  const en = isEnglishLocale(locale);
   const picks: AiSearchPlan["picks"] = [];
   for (let si = 0; si < searchCount; si += 1) {
     picks.push({
       searchIndex: si,
       rank: 0,
-      reason: "요청하신 셀럽·이벤트 무드와 가까운 상위 결과입니다.",
+      reason: en
+        ? "Top result closest to the requested celebrity or event mood."
+        : "요청하신 셀럽·이벤트 무드와 가까운 상위 결과입니다.",
     });
     picks.push({
       searchIndex: si,
       rank: 1,
-      reason: "같은 톤의 대안 피스입니다.",
+      reason: en ? "Alternative piece in a similar tone." : "같은 톤의 대안 피스입니다.",
     });
   }
   return picks.slice(0, 8);
 }
 
 function buildSummary(
-  celeb: (typeof CELEBRITY_KEYWORDS)[number] | undefined,
-  prompt: string
+  celeb: CelebrityEntry | undefined,
+  prompt: string,
+  locale?: string
 ): string {
-  if (celeb) {
-    if (EVENT_PARIS.test(prompt)) {
-      return `${celeb.name}의 파리·패션위크 착장 무드를 참고해, ${celeb.brands[0] ?? "럭셔리"} 톤과 런웨이 실루엣으로 쇼핑 가능한 유사 아이템을 골랐습니다.`;
+  const en = isEnglishLocale(locale);
+  const name = celeb ? (en ? celeb.label.en : celeb.label.ko) : undefined;
+  const brand = celeb?.brands[0];
+
+  if (celeb && name) {
+    if (isParisEvent(prompt, locale)) {
+      return en
+        ? `Using ${name}'s Paris Fashion Week mood as a guide, we targeted shoppable pieces in a ${brand ?? "luxury"} tone and runway silhouette.`
+        : `${name}의 파리·패션위크 착장 무드를 참고해, ${brand ?? "럭셔리"} 톤과 런웨이 실루엣으로 쇼핑 가능한 유사 아이템을 골랐습니다.`;
     }
-    if (EVENT_STAGE.test(prompt)) {
-      return `${celeb.name}의 무대·퍼포먼스 착장에 가까운 코디 키워드로 유사 상품을 모았습니다.`;
+    if (isStageEvent(prompt, locale)) {
+      return en
+        ? `Curated shoppable items close to ${name}'s stage and performance styling.`
+        : `${name}의 무대·퍼포먼스 착장에 가까운 코디 키워드로 유사 상품을 모았습니다.`;
     }
-    return `${celeb.name} 스타일에 가까운 최근 셀럽 코디 키워드로 쇼핑 결과를 큐레이션했습니다.`;
+    return en
+      ? `Curated shopping results using keywords close to ${name}'s recent style.`
+      : `${name} 스타일에 가까운 최근 셀럽 코디 키워드로 쇼핑 결과를 큐레이션했습니다.`;
   }
-  return "연예인·셀럽 착장 무드에 맞춰 쇼핑 검색어를 나눠 유사 아이템을 골랐습니다.";
+  return en
+    ? "Split the celebrity or event mood into shoppable searches and picked similar items."
+    : "연예인·셀럽 착장 무드에 맞춰 쇼핑 검색어를 나눠 유사 아이템을 골랐습니다.";
 }
 
-/**
- * "제니 파리 컬렉션 의상"처럼 네이버에 바로 안 나오는 문장을
- * 쇼핑 가능한 검색어 묶음으로 바꾼다.
- */
-/** 네이버 뉴스·블로그 검색용 (쇼핑 API와 다른 쿼리 톤) */
-export function buildContentSearchQuery(prompt: string): string {
+export function buildContentSearchQuery(prompt: string, locale?: string): string {
   const trimmed = prompt.trim();
-  if (!trimmed) return "패션 트렌드";
+  const en = isEnglishLocale(locale);
+  if (!trimmed) return en ? "fashion trend" : "패션 트렌드";
 
   const celeb = findCelebrity(trimmed);
   if (celeb) {
-    if (EVENT_PARIS.test(trimmed)) {
-      return `${celeb.name} ${celeb.brands[0] ?? ""} 파리 패션위크`.trim();
+    const name = en ? celeb.label.en : celeb.label.ko;
+    const brand = celeb.brands[0] ?? "";
+    if (isParisEvent(trimmed, locale)) {
+      return en
+        ? `${name} ${brand} Paris Fashion Week`.trim()
+        : `${name} ${brand} 파리 패션위크`.trim();
     }
-    if (EVENT_STAGE.test(trimmed)) {
-      return `${celeb.name} 무대 패션`;
+    if (isStageEvent(trimmed, locale)) {
+      return en ? `${name} stage fashion` : `${name} 무대 패션`;
     }
-    if (EVENT_AIRPORT.test(trimmed)) {
-      return `${celeb.name} 공항패션`;
+    if (isAirportEvent(trimmed, locale)) {
+      return en ? `${name} airport fashion` : `${name} 공항패션`;
     }
-    return `${celeb.name} 패션`;
+    return en ? `${name} fashion` : `${name} 패션`;
   }
 
   return trimmed.slice(0, 80);
 }
 
-export function isCelebrityStylePrompt(prompt: string): boolean {
+export function isCelebrityStylePrompt(prompt: string, locale?: string): boolean {
   const trimmed = prompt.trim();
   if (!trimmed) return false;
   if (findCelebrity(trimmed)) return true;
-  return CELEBRITY_SIGNAL.test(trimmed);
+  return isEnglishLocale(locale)
+    ? CELEBRITY_SIGNAL_EN.test(trimmed)
+    : CELEBRITY_SIGNAL_KO.test(trimmed);
 }
 
-export function buildCelebritySearchPlan(prompt: string): AiSearchPlan | null {
+export function buildCelebritySearchPlan(
+  prompt: string,
+  locale?: string
+): AiSearchPlan | null {
   const trimmed = prompt.trim();
   if (!trimmed) return null;
-  if (!isCelebrityStylePrompt(trimmed)) return null;
+  if (!isCelebrityStylePrompt(trimmed, locale)) return null;
 
   const celeb = findCelebrity(trimmed);
-  const searches = buildSearches(celeb, trimmed);
+  const searches = buildSearches(celeb, trimmed, locale);
   return {
-    summary: buildSummary(celeb, trimmed),
+    summary: buildSummary(celeb, trimmed, locale),
     searches,
-    picks: buildPicks(searches.length),
+    picks: buildPicks(searches.length, locale),
   };
 }

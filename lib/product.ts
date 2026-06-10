@@ -49,7 +49,20 @@ export function productToDetailHref(product: Product): string {
   if (product.mallName) {
     q.set("mn", product.mallName);
   }
+  const source = product.source ?? inferProductSource(product);
+  if (source) {
+    q.set("src", source);
+  }
   return `/product?${q.toString()}`;
+}
+
+export function inferProductSource(
+  product: Pick<Product, "id" | "source" | "mall">
+): ProductSource {
+  if (product.source) return product.source;
+  if (product.id.startsWith("ali-")) return "aliexpress";
+  if (/aliexpress/i.test(product.mall)) return "aliexpress";
+  return "naver";
 }
 
 export function parseProductFromSearchParams(
@@ -63,7 +76,16 @@ export function parseProductFromSearchParams(
   }
   const id = searchParams.get("id") ?? "unknown";
   const price = Number(searchParams.get("p")) || 0;
-  const mall = searchParams.get("m") ?? "네이버";
+  const mall = searchParams.get("m") ?? "Naver";
   const mallName = searchParams.get("mn") ?? undefined;
-  return { id, name, price, imageUrl, link, mall, mallName };
+  const src = searchParams.get("src");
+  const source: ProductSource | undefined =
+    src === "aliexpress" || src === "naver"
+      ? src
+      : id.startsWith("ali-")
+        ? "aliexpress"
+        : /aliexpress/i.test(mall)
+          ? "aliexpress"
+          : "naver";
+  return { id, name, price, imageUrl, link, mall, mallName, source };
 }

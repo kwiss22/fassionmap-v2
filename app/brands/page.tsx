@@ -27,14 +27,14 @@ export default function BrandsPage() {
           Where fashion <em className="italic">lives</em>
         </h1>
         <p className="mt-3 max-w-lg text-[13px] text-on-surface-variant">
-          52개 메종, 글로벌 atlas, 에디터 픽. 홈에서는 스타일 추천에 집중하고,
-          브랜드 세계관은 여기서 탐색합니다.
+          52 maisons, global atlas, editor picks. Home focuses on styling —
+          explore brand worlds here.
         </p>
         <Link
           href="/"
           className="mt-4 inline-block text-[11px] tracking-[0.2em] text-on-surface-variant uppercase underline-link"
         >
-          ← AI 스타일링 홈
+          ← AI styling home
         </Link>
       </section>
 
@@ -60,7 +60,7 @@ export default function BrandsPage() {
           The <em>index</em>
         </h2>
         <p className="mt-2 text-[13px] text-on-surface-variant">
-          52개 큐레이션 브랜드.
+          52 curated brands.
         </p>
       </section>
       <BrandIndex />

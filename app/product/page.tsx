@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo } from "react";
 import { getAffiliateLink } from "@/lib/affiliate";
 import { parseProductFromSearchParams } from "@/lib/product";
-import { formatKrwAmount } from "@/lib/utils";
+import { formatProductPrice } from "@/lib/price";
 import { ProductHero } from "@/components/product/ProductHero";
 import { PurchaseBar } from "@/components/product/PurchaseBar";
 import { MallBadge } from "@/components/product/MallBadge";
@@ -23,14 +23,14 @@ function ProductDetailBody() {
       <div className="mx-auto max-w-lg px-8 py-32 text-center">
         <p className="eyebrow mb-4">Not found</p>
         <p className="editorial-display text-2xl">
-          상품 정보를 찾을 수 없습니다.
+          We couldn&apos;t find this product.
         </p>
         <Link
           href="/"
           className="underline-link mt-8 inline-block text-sm text-on-surface"
           data-active="true"
         >
-          홈으로 돌아가기
+          Back to home
         </Link>
       </div>
     );
@@ -67,18 +67,18 @@ function ProductDetailBody() {
 
         <div className="mt-5 flex items-baseline gap-3 tabular-nums">
           <span className="text-[22px] font-semibold">
-            ₩{formatKrwAmount(product.price)}
+            {formatProductPrice(product)}
           </span>
           {/* 원가·할인율은 실데이터가 없으므로 이번 라운드 비노출 */}
         </div>
 
         <section className="mt-10 space-y-3 border-t border-outline-variant/70 pt-6 text-[13px] leading-relaxed text-on-surface-variant">
           <p>
-            선택한 상품은 {product.mall}에서 운영 중인 리테일 정보를 기반으로
-            표시됩니다. 구매는 {product.mallName ?? product.mall}의 공식
-            스토어로 연결되며, 가격·재고는 이동 후 페이지를 기준으로 합니다.
+            This listing is based on retail data from {product.mall}. Purchases
+            go to the official {product.mallName ?? product.mall} store — price
+            and stock are confirmed on their site after you tap through.
           </p>
-          <p>무료 배송 · 관세 포함가 기준은 각 몰 정책을 따릅니다.</p>
+          <p>Free shipping and duties-included pricing follow each retailer&apos;s policy.</p>
         </section>
       </section>
 

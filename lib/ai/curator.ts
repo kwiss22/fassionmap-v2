@@ -24,7 +24,7 @@ function toErrorMessage(error: unknown): string {
 function buildFallbackIssueDraft(input: CurationInput): IssueDraft {
   const maxSections = Math.max(1, input.maxSections ?? 3);
   const trendSignals =
-    input.trendSignals.length > 0 ? input.trendSignals : ["에디터 추천"];
+    input.trendSignals.length > 0 ? input.trendSignals : ["editor's pick"];
 
   const sections: IssueDraft["sections"] = Array.from(
     { length: maxSections },
@@ -46,7 +46,7 @@ function buildFallbackIssueDraft(input: CurationInput): IssueDraft {
     season: input.issueMeta.season,
     title: `Fallback issue for ${input.issueMeta.city}`,
     titleHighlight: "fallback",
-    dek: "모델 출력 검증에 실패해 fallback 초안을 사용합니다.",
+    dek: "Model output validation failed — using a fallback draft.",
     date: input.issueMeta.date,
     city: input.issueMeta.city,
     coverLabel: "FALLBACK COVER",
@@ -54,7 +54,7 @@ function buildFallbackIssueDraft(input: CurationInput): IssueDraft {
       "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=85&w=1800",
     coverAlt: "Fallback editorial cover image",
     coverFocal: "center 35%",
-    primaryCtaLabel: "COLLECTION 보기",
+    primaryCtaLabel: "VIEW COLLECTION",
     primaryCtaHref: "/feed",
     secondaryCtaLabel: "LOOKBOOK",
     secondaryCtaHref: "/saved?tab=looks",

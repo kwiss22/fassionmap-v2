@@ -14,13 +14,13 @@ export function AiRecommendedPrompts({
   onSelect,
 }: AiRecommendedPromptsProps) {
   return (
-    <section className="flex flex-col gap-5" aria-label="추천 콘텐츠">
+    <section className="flex flex-col gap-5" aria-label="Suggested prompts">
       <div>
         <h3 className="text-[11px] font-medium tracking-[0.24em] text-on-surface-variant">
-          추천 콘텐츠
+          Suggested prompts
         </h3>
         <p className="mt-1 text-[12px] text-on-surface-variant">
-          테마를 누르면 바로 큐레이션합니다.
+          Tap a theme to run curation instantly.
         </p>
       </div>
 

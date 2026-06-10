@@ -7,7 +7,6 @@ import {
   AiProductsSection,
 } from "@/components/search/AiSearchSections";
 import { AiRecommendedPrompts } from "@/components/search/AiRecommendedPrompts";
-import { AIChip } from "@/components/ui/AIChip";
 import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import type { AiRecommendedPrompt } from "@/lib/ai/recommended-prompts";
 import type {
@@ -16,6 +15,7 @@ import type {
   AiSearchCuratedItem,
   LLMProviderName,
 } from "@/lib/ai/types";
+import { APP_MARKET } from "@/lib/market";
 
 type AiSearchApiData = {
   summary: string;
@@ -33,9 +33,7 @@ type AiSearchApiResponse = {
 };
 
 type AiCuratePanelProps = {
-  /** URL ?q= 등 홈 Agent에서 넘어온 초기 프롬프트 */
   initialPrompt?: string;
-  /** initialPrompt가 있으면 마운트 시 자동 큐레이션 */
   autoRun?: boolean;
 };
 
@@ -60,7 +58,7 @@ export function AiCuratePanel({
   const runCuration = useCallback(async (text: string, recommendId?: string) => {
     const query = text.trim();
     if (query.length < 2) {
-      setError("2자 이상으로 무엇을 찾는지 적어 주세요.");
+      setError("Describe what you want in at least 2 characters.");
       return;
     }
 
@@ -76,13 +74,13 @@ export function AiCuratePanel({
       const res = await fetch("/api/ai/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: query }),
+        body: JSON.stringify({ prompt: query, locale: APP_MARKET.locale }),
       });
       const json = (await res.json()) as AiSearchApiResponse;
       if (!res.ok || !json.ok || !json.data) {
         setError(
           json.error ??
-            `AI 큐레이션 오류 (${res.status}). .env.local의 LLM_PROVIDER·API 키를 확인하세요.`
+            `AI curation error (${res.status}). Check LLM_PROVIDER and API keys in .env.local.`
         );
         return;
       }
@@ -92,7 +90,7 @@ export function AiCuratePanel({
       setProvider(json.data.provider);
       setCached(!!json.cached);
     } catch {
-      setError("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      setError("Network error. Please try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -105,8 +103,6 @@ export function AiCuratePanel({
 
   const onRecommendSelect = useCallback(
     (item: AiRecommendedPrompt) => {
-      // UX: 프리셋 클릭 시 화면이 상단 입력창으로 튀는 느낌을 줄이기 위해
-      // textarea value는 그대로 두고, API 호출에만 해당 프롬프트를 사용한다.
       void runCuration(item.prompt, item.id);
     },
     [runCuration]
@@ -128,14 +124,6 @@ export function AiCuratePanel({
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-2">
-        <AIChip>AI 스타일링</AIChip>
-        <p className="max-w-md text-[13px] leading-relaxed text-on-surface-variant">
-          체형·일정·날씨·예산을 적어 주시면, 관련 이슈 요약과 함께 착장에 맞는
-          쇼핑 아이템을 추천합니다.
-        </p>
-      </header>
-
       <div className="relative">
         <span
           aria-hidden
@@ -150,9 +138,9 @@ export function AiCuratePanel({
             setActiveRecommendId(null);
           }}
           rows={3}
-          placeholder="예: 165cm 하체 통통, 비 오는 날 출근룩, 예산 30만 원대"
+          placeholder="e.g. 5'5 curvy, rainy-day office look, budget around $250"
           className="ai-search-field min-h-[96px] w-full resize-y py-3 pl-11 pr-4 text-[14px] placeholder:text-on-surface-variant"
-          aria-label="AI 큐레이션 요청"
+          aria-label="AI curation request"
         />
       </div>
 
@@ -160,9 +148,9 @@ export function AiCuratePanel({
         type="button"
         disabled={loading}
         onClick={() => submit()}
-        className="h-11 w-full rounded-sm bg-[var(--color-ai)] text-[12px] font-medium tracking-[0.18em] text-white transition-opacity disabled:opacity-50"
+        className="inline-flex h-12 w-full items-center justify-center bg-on-surface px-8 text-[12px] font-medium tracking-[0.22em] text-on-primary-container uppercase transition-opacity hover:opacity-90 disabled:opacity-40"
       >
-        {loading ? "큐레이션 중…" : "큐레이션 받기"}
+        {loading ? "Curating…" : "Get curation"}
       </button>
 
       {showRecommendations ? (
@@ -172,13 +160,6 @@ export function AiCuratePanel({
           onSelect={onRecommendSelect}
         />
       ) : null}
-
-      {provider && (
-        <p className="text-[10px] tracking-[0.2em] text-on-surface-variant">
-          Provider: {provider}
-          {cached ? " · cached" : ""}
-        </p>
-      )}
 
       {error ? (
         <p
@@ -191,21 +172,21 @@ export function AiCuratePanel({
 
       {loading ? (
         <p className="py-8 text-center text-[11px] tracking-[0.22em] text-on-surface-variant">
-          기사 수집 · 요약 · 쇼핑 큐레이션 중…
+          Gathering coverage · summarizing · curating products…
         </p>
       ) : null}
 
       {!loading && hasResults ? (
-        <div className="flex flex-col gap-10">
-          <AiArticlesSection articles={articles} />
+        <div className="mt-10 flex flex-col gap-16 border-t border-outline-variant/25 pt-12 sm:-mx-8 sm:max-w-3xl md:-mx-12 lg:-mx-16 lg:max-w-4xl">
           {lookBrief ? <AiLookBriefSection brief={lookBrief} /> : null}
           <AiProductsSection items={items} />
+          <AiArticlesSection articles={articles} />
         </div>
       ) : null}
 
       {!loading && !error && submitted && !hasResults ? (
         <p className="py-8 text-center text-[13px] text-on-surface-variant">
-          결과를 가져오지 못했습니다. 표현을 바꿔 다시 시도해 보세요.
+          No results yet. Try rephrasing your request.
         </p>
       ) : null}
     </div>

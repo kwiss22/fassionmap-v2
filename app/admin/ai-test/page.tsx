@@ -79,12 +79,12 @@ export default async function AdminAiTestPage() {
             </span>
           </div>
           <p className="mt-2 text-[13px] text-on-surface-variant">
-            Mock 큐레이터 결과를 서버에서 생성해 확인합니다. (학습용 admin 디버그)
+            Generate mock curator output on the server for debugging. (Learning admin only)
           </p>
         </header>
 
         <section className="mt-8 rounded-sm border border-outline-variant/70 bg-surface-container-low p-5">
-          <p className="eyebrow text-on-surface-variant">입력</p>
+          <p className="eyebrow text-on-surface-variant">INPUT</p>
           <form action={generateIssueDraftAction} className="mt-4 space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-[13px]">
@@ -113,13 +113,13 @@ export default async function AdminAiTestPage() {
             </div>
             <label className="block text-[13px]">
               <span className="text-on-surface-variant">
-                Trend signals (콤마 구분)
+                Trend signals (comma-separated)
               </span>
               <input
                 type="text"
                 name="trendSignals"
-                placeholder="캐시미어, 미니멀, 뉴트럴 톤"
-                defaultValue="캐시미어, 미니멀, 뉴트럴 톤"
+                placeholder="cashmere, minimal, neutral tones"
+                defaultValue="cashmere, minimal, neutral tones"
                 className="mt-1 w-full border border-outline-variant bg-surface-bright px-3 py-2 text-[13px] text-on-surface outline-none focus:border-outline"
               />
             </label>
@@ -133,11 +133,11 @@ export default async function AdminAiTestPage() {
         </section>
 
         <section className="mt-10">
-          <p className="eyebrow text-on-surface-variant">결과</p>
+          <p className="eyebrow text-on-surface-variant">OUTPUT</p>
 
           {!result ? (
             <p className="mt-3 text-[13px] text-on-surface-variant">
-              아직 생성된 결과 없음
+              No result yet — submit the form above.
             </p>
           ) : result.ok === false ? (
             <div
@@ -150,7 +150,7 @@ export default async function AdminAiTestPage() {
             <div className="mt-4 space-y-6">
               <div className="rounded-sm border border-outline-variant/70 bg-surface-container-low p-4">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant">
-                  메타
+                  Meta
                 </p>
                 <dl className="mt-2 grid gap-2 text-[13px] sm:grid-cols-2">
                   <div>
@@ -182,7 +182,7 @@ export default async function AdminAiTestPage() {
 
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant">
-                  섹션
+                  Sections
                 </p>
                 <ul className="mt-2 space-y-3">
                   {result.data.sections.map((sec) => (

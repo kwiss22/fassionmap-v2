@@ -30,7 +30,7 @@ export function ProductHero({
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-4">
         <Link
           href="/"
-          aria-label="뒤로가기"
+          aria-label="Go back"
           className="flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 backdrop-blur"
         >
           <svg
@@ -54,7 +54,7 @@ export function ProductHero({
           <HeartToggle product={product} size="md" />
           <button
             type="button"
-            aria-label="공유"
+            aria-label="Share"
             className="flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 backdrop-blur"
           >
             <svg

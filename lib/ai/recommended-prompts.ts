@@ -1,8 +1,6 @@
 export type AiRecommendedPrompt = {
   id: string;
-  /** 칩에 보이는 짧은 라벨 */
   label: string;
-  /** API에 전달할 전체 문장 */
   prompt: string;
 };
 
@@ -15,74 +13,83 @@ export type AiRecommendedGroup = {
 export const AI_RECOMMENDED_GROUPS: readonly AiRecommendedGroup[] = [
   {
     id: "region",
-    title: "지역 · 시즌",
+    title: "Cities & runways",
     items: [
       {
         id: "paris-fw",
-        label: "파리 패션위크",
-        prompt: "파리 패션위크에서 화제 된 여성 럭셔리 룩, 트위드·오버사이즈 코트",
+        label: "Paris FW",
+        prompt:
+          "Paris Fashion Week standout womenswear — tweed, oversized coats, quiet luxury",
       },
       {
         id: "milan",
-        label: "밀란 랭킹",
-        prompt: "밀란 패션위크 맨투맨·가죽·테일러드 포인트 남녀 룩",
+        label: "Milan ranking",
+        prompt:
+          "Milan fashion week menswear and womenswear — leather, tailoring, elevated basics",
       },
       {
         id: "seoul-street",
-        label: "서울 스트릿",
-        prompt: "서울 성수·한남 스트릿 패션, 미니멀 블랙 코디 20대",
+        label: "Seoul street",
+        prompt:
+          "Seoul Seongsu and Hannam street style — minimal black layers for women in their 20s",
       },
       {
         id: "ny-fw",
-        label: "뉴욕 위크",
-        prompt: "뉴욕 패션위크 데님·블레이저 레이어드 여성 룩",
+        label: "NYC week",
+        prompt:
+          "New York Fashion Week layered looks — denim, blazers, and polished casual for women",
       },
     ],
   },
   {
     id: "mood",
-    title: "무드 · 상황",
+    title: "Mood & occasion",
     items: [
       {
         id: "girlfriend",
-        label: "여친룩",
-        prompt: "여친룩 데이트 코디, 부드러운 니트·미디 스커트·로퍼 20대 여성",
+        label: "Date night",
+        prompt:
+          "Soft date-night outfit for women in their 20s — knit, midi skirt, loafers under $200",
       },
       {
         id: "office-30s",
-        label: "30대 출근룩",
-        prompt: "30대 여성 출근룩, 미니멀 블레이저·슬랙스·로퍼 50~80만 원대",
+        label: "Office 30s",
+        prompt:
+          "Minimal office look for women in their 30s — blazer, tailored trousers, loafers",
       },
       {
         id: "weekend",
-        label: "주말 브런치",
-        prompt: "주말 브런치 데이트, 린넨 셔츠·와이드 팬츠·스니커즈 여성",
+        label: "Weekend brunch",
+        prompt:
+          "Weekend brunch outfit — linen shirt, wide pants, clean sneakers for women",
       },
       {
         id: "minimal",
-        label: "미니멀 데일리",
-        prompt: "미니멀 데일리룩, 베이지·화이트 톤 코튼·니트 20~30대",
+        label: "Minimal daily",
+        prompt:
+          "Minimal daily uniform — beige and white cotton knits for women in their 20s–30s",
       },
     ],
   },
   {
     id: "celebrity",
-    title: "셀럽 · 이슈",
+    title: "Celebrities & moments",
     items: [
       {
         id: "jennie-paris",
-        label: "제니 파리",
-        prompt: "제니 파리 패션위크 착장, 샤넬 룩 유사 아이템",
+        label: "Jennie Paris",
+        prompt:
+          "Jennie Paris Fashion Week outfit — Chanel-inspired tweed and black mini dress",
       },
       {
         id: "jisoo-airport",
-        label: "지수 공항패션",
-        prompt: "지수 공항 패션, 디올 톤 코트·가방 코디",
+        label: "Jisoo airport",
+        prompt: "Jisoo airport fashion — Dior-tone coat and structured bag styling",
       },
       {
         id: "karina-stage",
-        label: "카리나 무대",
-        prompt: "카리나 무대 의상, 퍼포먼스 코디 유사 쇼핑",
+        label: "Karina stage",
+        prompt: "Karina stage performance look — shoppable similar performance styling",
       },
     ],
   },

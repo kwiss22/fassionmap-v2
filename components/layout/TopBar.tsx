@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSaved } from "@/lib/hooks/use-saved";
 import { SparklesIcon } from "@/components/ui/SparklesIcon";
+import { TickerBar } from "@/components/home/TickerBar";
 import { StatusStrip } from "./StatusStrip";
 
 type TopBarProps = {
@@ -21,6 +22,8 @@ type TopBarProps = {
    * 서브페이지에서는 페이지 자체 정보에 집중하기 위해 끌 수 있다.
    */
   showStatusStrip?: boolean;
+  /** 지정 시 StatusStrip 대신 TickerBar만 노출 (동시에 둘 다 쓰지 않음). */
+  tickerItems?: readonly string[];
 };
 
 /**
@@ -42,6 +45,7 @@ export function TopBar({
   backHref,
   right,
   showStatusStrip = true,
+  tickerItems,
 }: TopBarProps) {
   const pathname = usePathname() ?? "/";
   const back = backHref ?? (showBack ? "/" : undefined);
@@ -54,7 +58,7 @@ export function TopBar({
           {back ? (
             <Link
               href={back}
-              aria-label="뒤로가기"
+              aria-label="Go back"
               className="-ml-1 flex h-8 w-8 items-center justify-center"
             >
               <BackIcon />
@@ -105,7 +109,12 @@ export function TopBar({
         </div>
       </div>
 
-      {showStatusStrip && <StatusStrip />}
+      {showStatusStrip &&
+        (tickerItems && tickerItems.length > 0 ? (
+          <TickerBar items={tickerItems} />
+        ) : (
+          <StatusStrip />
+        ))}
     </header>
   );
 }
@@ -114,7 +123,7 @@ function Wordmark() {
   return (
     <Link
       href="/"
-      aria-label="홈"
+      aria-label="Home"
       className="font-playfair text-[18px] leading-none tracking-tight text-on-surface lg:text-[20px]"
     >
       Fashion<em className="not-italic font-semibold">map</em>
@@ -123,37 +132,44 @@ function Wordmark() {
 }
 
 function DefaultActions() {
+  const pathname = usePathname() ?? "/";
   const { items: saved } = useSaved();
+  const onSearchPage = pathname.startsWith("/search");
+
   return (
     <>
-      {/* Desktop persistent search — ⌘K 단축키 컨벤션을 시각적으로 차용 */}
-      <Link
-        href="/#styling-agent"
-        aria-label="AI 스타일링"
-        className="ai-search-trigger hidden h-9 min-w-[17rem] max-w-md flex-1 items-center gap-2.5 px-3.5 text-[12px] text-on-surface transition-colors hover:text-on-surface lg:flex"
-      >
-        <SparklesIcon className="h-[18px] w-[18px] shrink-0 text-[var(--color-ai-bright)]" />
-        <span className="flex-1 truncate text-left text-on-surface-variant">
-          오늘 입을 룩, AI에게 물어보기…
-        </span>
-        <kbd className="ml-auto hidden shrink-0 items-center px-1.5 font-sans text-[10px] font-medium tracking-[0.14em] text-[var(--color-ai)]/80 sm:inline-flex">
-          ⌘K
-        </kbd>
-      </Link>
+      {!onSearchPage ? (
+        <>
+          {/* Desktop persistent search — ⌘K 단축키 컨벤션을 시각적으로 차용 */}
+          <Link
+            href="/search?mode=ai"
+            aria-label="Search with AI"
+            className="ai-search-trigger hidden h-9 min-w-[17rem] max-w-md flex-1 items-center gap-2.5 px-3.5 text-[12px] text-on-surface transition-colors hover:text-on-surface lg:flex"
+          >
+            <SparklesIcon className="h-[18px] w-[18px] shrink-0 text-[var(--color-ai-bright)]" />
+            <span className="flex-1 truncate text-left text-on-surface-variant">
+              Ask AI what to wear today…
+            </span>
+            <kbd className="ml-auto hidden shrink-0 items-center px-1.5 font-sans text-[10px] font-medium tracking-[0.14em] text-[var(--color-ai)]/80 sm:inline-flex">
+              ⌘K
+            </kbd>
+          </Link>
 
-      {/* Mobile — AI 검색 진입 */}
-      <Link
-        href="/#styling-agent"
-        aria-label="AI 스타일링"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-indigo-200/70 bg-gradient-to-br from-surface-bright to-[var(--color-ai-surface)] text-[var(--color-ai)] shadow-[0_2px_10px_rgba(49,46,129,0.12)] transition-transform active:scale-95 lg:hidden"
-      >
-        <SparklesIcon className="h-[18px] w-[18px]" />
-      </Link>
+          {/* Mobile — 검색 진입 */}
+          <Link
+            href="/search?mode=ai"
+            aria-label="Search with AI"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-indigo-200/70 bg-gradient-to-br from-surface-bright to-[var(--color-ai-surface)] text-[var(--color-ai)] shadow-[0_2px_10px_rgba(49,46,129,0.12)] transition-transform active:scale-95 lg:hidden"
+          >
+            <SparklesIcon className="h-[18px] w-[18px]" />
+          </Link>
+        </>
+      ) : null}
 
       {/* SAVED — 데스크톱은 텍스트, 모바일은 아이콘 */}
       <Link
         href="/saved"
-        aria-label={`저장 ${saved.length}건`}
+        aria-label={`Saved ${saved.length} items`}
         className="hidden lg:inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.22em] text-on-surface uppercase"
       >
         Saved
@@ -163,7 +179,7 @@ function DefaultActions() {
       </Link>
       <Link
         href="/saved"
-        aria-label={`저장 ${saved.length}건`}
+        aria-label={`Saved ${saved.length} items`}
         className="relative flex h-8 w-8 items-center justify-center lg:hidden"
       >
         <BookmarkIcon />
@@ -177,7 +193,7 @@ function DefaultActions() {
       {/* My */}
       <Link
         href="/me"
-        aria-label="마이"
+        aria-label="My account"
         className="flex h-8 w-8 items-center justify-center border border-on-surface text-[11px] font-medium tracking-[0.22em]"
       >
         MY

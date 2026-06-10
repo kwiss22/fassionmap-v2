@@ -22,7 +22,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Fashionmap | Global Edit",
   description:
-    "파페치·네타포르테·W컨셉을 가로질러 에디터와 AI가 함께 고른 시즌별 글로벌 에디트.",
+    "Seasonal global edits curated by editors and AI — from quiet luxury to K-fashion.",
 };
 
 export default function RootLayout({
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`light ${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`light ${inter.variable} ${playfair.variable}`}>
       <head>
         {/* Pretendard (한글 본문) — CDN 서브셋. next/font에 한글 웹폰트가
             Inter처럼 제공되지 않아 CDN 링크로 통합. rsms gstatic 대체용. */}

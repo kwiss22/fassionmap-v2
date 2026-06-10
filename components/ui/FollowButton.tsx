@@ -35,7 +35,7 @@ export function FollowButton({
     <button
       type="button"
       aria-pressed={active}
-      aria-label={active ? "팔로우 해제" : "팔로우"}
+      aria-label={active ? "Unfollow" : "Follow"}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

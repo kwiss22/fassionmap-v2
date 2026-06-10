@@ -66,7 +66,7 @@ export function BrandPicker({ emphasizeHeader = false }: BrandPickerProps) {
             Follow your brands.
           </h2>
           <p className="mt-2 text-[13px] text-on-surface-variant">
-            좋아하는 메종을 팔로우하면, 이곳에 신상·셀렉션이 모여요.
+            Follow your favorite maisons — new drops and edits land here.
           </p>
         </header>
       )}

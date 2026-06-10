@@ -24,6 +24,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "ssl.pstatic.net",
       },
+      {
+        protocol: "https",
+        hostname: "**.aliexpress-media.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.alicdn.com",
+      },
     ],
   },
 };

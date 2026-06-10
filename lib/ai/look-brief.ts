@@ -1,6 +1,9 @@
 import { getLLMProvider } from "@/lib/ai/client";
 import { buildFallbackLookBrief } from "@/lib/ai/look-brief-fallback";
-import { lookBriefSchema } from "@/lib/ai/schema";import type {
+import { lookBriefSchema } from "@/lib/ai/schema";
+import { APP_MARKET } from "@/lib/market";
+import type { ProductSource } from "@/lib/product";
+import type {
   AiLookBrief,
   AiSearchCuratedItem,
   GenerateIssueOptions,
@@ -10,7 +13,22 @@ import { lookBriefSchema } from "@/lib/ai/schema";import type {
 
 const DEFAULT_MAX_OUTPUT_TOKENS = 512;
 
-function formatKrw(amount: number): string {
+function formatPrice(
+  amount: number,
+  locale?: string,
+  source: ProductSource = "naver"
+): string {
+  const en = (locale ?? APP_MARKET.locale) === "en-US";
+  if (en && source === "aliexpress") {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+  if (en) {
+    return `₩${amount.toLocaleString("en-US")}`;
+  }
   if (amount >= 10_000) {
     return `${Math.round(amount / 10_000)}만 원`;
   }
@@ -18,20 +36,32 @@ function formatKrw(amount: number): string {
 }
 
 export function buildShoppingPriceRange(
-  items: AiSearchCuratedItem[]
+  items: AiSearchCuratedItem[],
+  locale?: string
 ): string | undefined {
   if (items.length === 0) return undefined;
   const prices = items.map((i) => i.product.price).filter((p) => p > 0);
   if (prices.length === 0) return undefined;
   const min = Math.min(...prices);
   const max = Math.max(...prices);
+  const en = (locale ?? APP_MARKET.locale) === "en-US";
+  const source =
+    items.find((i) => i.product.source === "aliexpress")?.product.source ??
+    items[0]?.product.source ??
+    "naver";
+  const prefix = en
+    ? source === "aliexpress"
+      ? "Similar items around"
+      : "Similar K-Fashion items around"
+    : "유사 쇼핑 상품 약";
   if (min === max) {
-    return `유사 쇼핑 상품 약 ${formatKrw(min)}`;
+    return `${prefix} ${formatPrice(min, locale, source)}`;
   }
-  return `유사 쇼핑 상품 약 ${formatKrw(min)}~${formatKrw(max)}`;
+  return `${prefix} ${formatPrice(min, locale, source)}–${formatPrice(max, locale, source)}`;
 }
 
-export async function resolveLookBrief(  input: LookBriefInput,
+export async function resolveLookBrief(
+  input: LookBriefInput,
   options: { provider?: LLMProvider; maxOutputTokens?: number } = {}
 ): Promise<AiLookBrief> {
   const provider = options.provider ?? getLLMProvider();
@@ -50,9 +80,10 @@ export async function resolveLookBrief(  input: LookBriefInput,
 
 export function enrichLookBriefWithShopping(
   brief: AiLookBrief,
-  items: AiSearchCuratedItem[]
+  items: AiSearchCuratedItem[],
+  locale?: string
 ): AiLookBrief {
-  const shoppingPriceRange = buildShoppingPriceRange(items);
+  const shoppingPriceRange = buildShoppingPriceRange(items, locale);
   if (!shoppingPriceRange) return brief;
   return { ...brief, shoppingPriceRange };
 }

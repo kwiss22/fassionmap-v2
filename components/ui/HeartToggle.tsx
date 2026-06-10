@@ -32,7 +32,7 @@ export function HeartToggle({
     <button
       type="button"
       aria-pressed={active}
-      aria-label={ariaLabel ?? (active ? "저장 해제" : "저장")}
+      aria-label={ariaLabel ?? (active ? "Remove from saved" : "Save")}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
