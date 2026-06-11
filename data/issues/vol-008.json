@@ -1,0 +1,60 @@
+{
+  "vol": "08",
+  "season": "FW26",
+  "title": "Mock issue for SEOUL",
+  "titleHighlight": "mock",
+  "dek": "Deterministic mock issue draft for SEOUL",
+  "date": "06 · 11 · 26",
+  "city": "SEOUL",
+  "coverLabel": "MOCK COVER",
+  "coverImage": "https://images.unsplash.com/photo-1483985988350-763728e3685b?auto=format&fit=crop&q=85&w=1800",
+  "coverAlt": "Shopping district editorial — urban fashion week tone.",
+  "coverFocal": "center 45%",
+  "primaryCtaLabel": "VIEW COLLECTION",
+  "primaryCtaHref": "/feed",
+  "secondaryCtaLabel": "LOOKBOOK",
+  "secondaryCtaHref": "/saved?tab=looks",
+  "tickerItems": [
+    "VOL 08",
+    "FW26",
+    "SEOUL"
+  ],
+  "sections": [
+    {
+      "id": "mock-brand-1",
+      "eyebrow": "MOCK CURATION",
+      "title": "Brand spotlight",
+      "titleHighlight": "hermes-cashmere",
+      "subtitle": "Brand section from candidate products",
+      "source": {
+        "type": "brand",
+        "brandSlug": "hermes-cashmere"
+      },
+      "size": 6
+    },
+    {
+      "id": "mock-theme-2",
+      "eyebrow": "MOCK EDIT 1",
+      "title": "cashmere edit",
+      "subtitle": "Theme section from trend signals",
+      "source": {
+        "type": "theme",
+        "query": "cashmere",
+        "size": 6
+      },
+      "size": 6
+    },
+    {
+      "id": "mock-theme-3",
+      "eyebrow": "MOCK EDIT 2",
+      "title": "minimal tailoring edit",
+      "subtitle": "Theme section from trend signals",
+      "source": {
+        "type": "theme",
+        "query": "minimal tailoring",
+        "size": 6
+      },
+      "size": 6
+    }
+  ]
+}

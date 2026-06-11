@@ -1,6 +1,6 @@
 "use client";
 
-import { CURRENT_ISSUE } from "@/lib/editorial";
+import { useCurrentIssue } from "@/lib/hooks/use-current-issue";
 import { useSaved } from "@/lib/hooks/use-saved";
 
 /**
@@ -9,16 +9,17 @@ import { useSaved } from "@/lib/hooks/use-saved";
  */
 export function StatusStrip() {
   const { items: saved } = useSaved();
+  const { issue } = useCurrentIssue();
 
   return (
     <div className="border-b border-outline-variant/70 bg-surface/95 backdrop-blur-md">
       <div className="mx-auto flex h-7 items-center justify-between px-5 text-[10px] tracking-[0.22em] text-on-surface-variant lg:px-8">
         <span className="font-medium text-on-surface">
-          VOL.&nbsp;{CURRENT_ISSUE.vol}
+          VOL.&nbsp;{issue.vol}
           <span aria-hidden className="mx-2 opacity-50">
             ·
           </span>
-          {CURRENT_ISSUE.season}
+          {issue.season}
         </span>
         <span>
           SAVED&nbsp;

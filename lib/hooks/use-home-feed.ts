@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { type Product } from "@/lib/product";
 import {
   CURRENT_ISSUE,
+  type EditorialIssue,
   type EditorialSection,
   resolveBrandQuery,
 } from "@/lib/editorial";
@@ -18,10 +19,21 @@ type LoadedSection = {
 type State = {
   sections: LoadedSection[];
   ready: boolean;
+  issue: EditorialIssue;
 };
 
+async function fetchCurrentIssue(): Promise<EditorialIssue> {
+  try {
+    const res = await fetch("/api/issue/current");
+    if (!res.ok) return CURRENT_ISSUE;
+    return (await res.json()) as EditorialIssue;
+  } catch {
+    return CURRENT_ISSUE;
+  }
+}
+
 /**
- * `CURRENT_ISSUE`의 모든 섹션 상품을 병렬 로드한다.
+ * 현재 이슈의 모든 섹션 상품을 병렬 로드한다.
  *
  * 각 섹션의 `source` 타입에 따라 쿼리 문자열을 조립해
  * `/api/naver-products`를 호출. `saved-ai`는 클라이언트 전용으로 처리하기 위해
@@ -36,6 +48,7 @@ export function useHomeFeed() {
       loading: true,
     })),
     ready: false,
+    issue: CURRENT_ISSUE,
   }));
   const abortRef = useRef<AbortController | null>(null);
 
@@ -44,8 +57,21 @@ export function useHomeFeed() {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    const issue = await fetchCurrentIssue();
+    if (controller.signal.aborted) return;
+
+    setState({
+      issue,
+      ready: false,
+      sections: issue.sections.map((section) => ({
+        section,
+        items: [],
+        loading: true,
+      })),
+    });
+
     await Promise.all(
-      CURRENT_ISSUE.sections.map(async (section, idx) => {
+      issue.sections.map(async (section, idx) => {
         const size = section.size ?? 6;
         const query = buildQueryForSection(section);
 
@@ -86,7 +112,7 @@ export function useHomeFeed() {
   }, []);
 
   useEffect(() => {
-    loadAll();
+    void loadAll();
     return () => abortRef.current?.abort();
   }, [loadAll]);
 
@@ -104,7 +130,6 @@ function buildQueryForSection(section: EditorialSection): string {
     case "theme":
       return section.source.query;
     case "saved-ai":
-      // Mock: 첫 번째 테마 쿼리를 AI 큐레이션처럼 재사용
       return "캐시미어 니트";
   }
 }

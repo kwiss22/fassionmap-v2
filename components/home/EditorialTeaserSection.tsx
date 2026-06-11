@@ -10,7 +10,9 @@ import { useHomeFeed } from "@/lib/hooks/use-home-feed";
  */
 export function EditorialTeaserSection() {
   const { sections } = useHomeFeed();
-  const theme = sections.find((s) => s.section.id === "theme-cashmere");
+  const theme =
+    sections.find((s) => s.section.id === "theme-cashmere") ??
+    sections.find((s) => s.section.source.type === "theme");
   const items = (theme?.items ?? []).slice(0, 3);
   const loading = theme?.loading ?? true;
   const hero = items[0];

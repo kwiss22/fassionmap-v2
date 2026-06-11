@@ -1,0 +1,62 @@
+{
+  "vol": "07",
+  "season": "SS26",
+  "title": "Quiet luxury, loud taste.",
+  "titleHighlight": "luxury",
+  "dek": "52 pieces curated by editors and AI — from Farfetch to Net-a-Porter and beyond.",
+  "date": "04 · 24 · 26",
+  "city": "SEOUL",
+  "coverLabel": "COVER 01",
+  "coverImage": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=85&w=1800",
+  "coverAlt": "Cashmere coat editorial — Quiet luxury, SS26 collection cover.",
+  "coverFocal": "center 35%",
+  "primaryCtaLabel": "VIEW COLLECTION",
+  "primaryCtaHref": "/feed",
+  "secondaryCtaLabel": "LOOKBOOK",
+  "secondaryCtaHref": "/saved?tab=looks",
+  "tickerItems": [
+    "IN THIS WEEK",
+    "FREE SHIPPING",
+    "DUTIES INCLUDED",
+    "SS26 NEW ARRIVAL",
+    "EDITOR'S PICK"
+  ],
+  "sections": [
+    {
+      "id": "ai-curated",
+      "eyebrow": "CURATED FOR YOU",
+      "title": "Nine picks for you today",
+      "subtitle": "Based on recent views and your saved list",
+      "source": { "type": "saved-ai" },
+      "size": 9,
+      "viewAllHref": "/saved"
+    },
+    {
+      "id": "theme-cashmere",
+      "eyebrow": "EDITOR'S EDIT · 01",
+      "title": "The cashmere edit",
+      "titleHighlight": "cashmere",
+      "subtitle": "Last cashmere coats before winter fades",
+      "source": { "type": "theme", "query": "cashmere coat women", "size": 6 },
+      "size": 6
+    },
+    {
+      "id": "brand-hermes",
+      "eyebrow": "MAISON SPOTLIGHT",
+      "title": "Hermès, again.",
+      "titleHighlight": "Hermès",
+      "subtitle": "The timeless reference — Hermès this season",
+      "source": { "type": "brand", "brandSlug": "hermes" },
+      "size": 6
+    },
+    {
+      "id": "theme-knit",
+      "eyebrow": "EDITOR'S EDIT · 02",
+      "title": "Soft power knits",
+      "titleHighlight": "knits",
+      "subtitle": "Soft, but impossible to ignore",
+      "source": { "type": "theme", "query": "women knit sweater", "size": 6 },
+      "size": 6
+    }
+  ]
+}
