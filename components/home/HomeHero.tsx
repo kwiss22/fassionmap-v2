@@ -9,8 +9,7 @@ import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { HOME_AGENT_PROMPTS } from "@/lib/home-agent-prompts";
 import { cn } from "@/lib/utils";
 
-/** Replace with your asset at `public/hero.jpg`. */
-const HERO_IMAGE = "/hero.jpg";
+const HERO_IMAGE = "/hero.png";
 
 function buildAiSearchUrl(prompt: string) {
   const params = new URLSearchParams();
@@ -39,7 +38,7 @@ function HeroLookImage({
       ) : (
         <Image
           src={HERO_IMAGE}
-          alt="Editorial look — Fashionmap cover"
+          alt="AI curation board — items to styled looks"
           fill
           priority={priority}
           sizes="(max-width: 1024px) 100vw, 58vw"
@@ -70,8 +69,8 @@ export function HomeHero() {
 
   return (
     <section className="lg:grid lg:grid-cols-12 lg:items-stretch lg:gap-x-10 lg:px-10 lg:py-24">
-      {/* Look image — mobile top stack; desktop right 7 cols */}
-      <div className="relative aspect-[3/4] w-full lg:col-span-7 lg:col-start-6 lg:row-start-1 lg:aspect-[4/5] lg:min-h-[min(85vh,720px)]">
+      {/* Look image — intrinsic 1024×793; desktop 7 cols */}
+      <div className="relative aspect-[1024/793] w-full lg:col-span-7 lg:col-start-6 lg:row-start-1">
         <HeroLookImage priority />
       </div>
 
