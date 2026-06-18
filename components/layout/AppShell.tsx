@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { BottomNav } from "./BottomNav";
+import { OnboardingRedirect } from "@/components/onboarding/OnboardingRedirect";
 
 /**
  * 전역 셸.
@@ -18,15 +19,19 @@ import { BottomNav } from "./BottomNav";
  *
  * 예외:
  *   - `/product/*`는 하단 PurchaseBar가 CTA를 차지하므로 BottomNav 숨김.
+ *   - `/onboarding`은 풀스크린 플로우이므로 BottomNav 숨김.
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideBottomNav = pathname?.startsWith("/product");
+  const hideBottomNav =
+    pathname?.startsWith("/product") || pathname?.startsWith("/onboarding");
 
   return (
-    <div className="relative mx-auto min-h-[100dvh] w-full max-w-[430px] bg-surface sm:max-w-[720px] lg:max-w-none">
-      <div className={hideBottomNav ? "" : "pb-nav lg:pb-0"}>{children}</div>
-      {!hideBottomNav && <BottomNav />}
-    </div>
+    <OnboardingRedirect>
+      <div className="relative mx-auto min-h-[100dvh] w-full max-w-[430px] bg-surface sm:max-w-[720px] lg:max-w-none">
+        <div className={hideBottomNav ? "" : "pb-nav lg:pb-0"}>{children}</div>
+        {!hideBottomNav && <BottomNav />}
+      </div>
+    </OnboardingRedirect>
   );
 }

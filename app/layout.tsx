@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { DM_Sans, Playfair_Display, Rajdhani } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-// Playfair Display — 시안의 이탤릭 세리프 핵심 자산.
-// 400(regular)/500(medium)/700(bold)을 normal+italic 둘 다 로드.
 const playfair = Playfair_Display({
   subsets: ["latin"],
   style: ["normal", "italic"],
@@ -19,10 +18,17 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const rajdhani = Rajdhani({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-rajdhani",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Fashionmap | Global Edit",
+  title: "Fashionmap | AI Styling",
   description:
-    "Seasonal global edits curated by editors and AI — from quiet luxury to K-fashion.",
+    "AI-curated looks and shoppable edits — tuned to your fit, vibe, and city.",
 };
 
 export default function RootLayout({
@@ -31,21 +37,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`light ${inter.variable} ${playfair.variable}`}>
+    <html
+      lang="en"
+      className={`light ${dmSans.variable} ${playfair.variable} ${rajdhani.variable}`}
+    >
       <head>
-        {/* Pretendard (한글 본문) — CDN 서브셋. next/font에 한글 웹폰트가
-            Inter처럼 제공되지 않아 CDN 링크로 통합. rsms gstatic 대체용. */}
         <link
           rel="stylesheet"
-          as="style"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+          href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap"
         />
-        {/* Cursor MCP 브라우저 확장이 `data-cursor-ref`를 DOM에 주입해 React
-            하이드레이션 불일치 경고를 띄우는 문제 완화.
-            - 확장 ref 시스템은 그대로 살려둬야 하므로 DOM은 건드리지 않음.
-            - 대신 React의 dev 전용 console.error 중 "hydrat"+"data-cursor-ref"
-              메시지만 걸러 Next dev 오버레이의 오탐 "Issue" 배지를 막는다.
-            - 프로덕션에선 확장 자체가 없어 이 분기가 호출되지 않음. */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -73,7 +73,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container antialiased"
+        className="bg-surface text-on-surface selection:bg-lime/30 selection:text-ink antialiased"
         suppressHydrationWarning
       >
         <AppShell>{children}</AppShell>

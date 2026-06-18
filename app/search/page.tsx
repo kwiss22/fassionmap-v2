@@ -3,9 +3,9 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
-import { AiCuratePanel } from "@/components/search/AiCuratePanel";
 import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { TopBar } from "@/components/layout/TopBar";
+import { StyleLabScreen } from "@/components/style-lab/StyleLabScreen";
 import { productDedupeKey, type Product } from "@/lib/product";
 import {
   NAVER_SHOP_DISPLAY_MAX,
@@ -454,34 +454,32 @@ function SearchBody() {
     [router, searchParams]
   );
 
+  if (mode === "ai") {
+    return (
+      <main className="theme-dark min-h-[100dvh]">
+        <StyleLabScreen />
+        <div className="fixed bottom-20 left-1/2 z-30 -translate-x-1/2 lg:bottom-6">
+          <button
+            type="button"
+            onClick={() => setSearchMode("shop")}
+            className="rounded-full border border-[rgba(57,255,122,0.15)] bg-[#0a1009]/95 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#5a7060] backdrop-blur"
+          >
+            Shop search
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-[100dvh] bg-surface text-on-surface">
       <TopBar title="Search" showBack showStatusStrip={false} />
 
       <section className="px-5 pt-6">
         <SearchModeTabs mode={mode} onChange={setSearchMode} />
-        {mode === "ai" ? (
-          <div className="mx-auto mt-10 max-w-xl pb-8 pt-4 text-center sm:mt-12 sm:max-w-2xl">
-            <p className="eyebrow text-on-surface-variant">Style agent</p>
-            <h2 className="editorial-display mt-3 text-[30px] leading-tight sm:text-[36px]">
-              What should you <em className="italic">wear?</em>
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-[13px] leading-relaxed text-on-surface-variant">
-              Describe the occasion, fit, and budget — we&apos;ll suggest a look
-              and shoppable pieces.
-            </p>
-            <div className="mt-8 text-left">
-              <AiCuratePanel
-                initialPrompt={searchParams.get("q") ?? ""}
-                autoRun={Boolean(searchParams.get("q")?.trim())}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="mt-5">
-            <ShopSearchPanel />
-          </div>
-        )}
+        <div className="mt-5">
+          <ShopSearchPanel />
+        </div>
       </section>
 
       <div className="h-20" />

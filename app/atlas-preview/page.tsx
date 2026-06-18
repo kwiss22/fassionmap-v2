@@ -1,6 +1,14 @@
-import { redirect } from "next/navigation";
+import { TrendMapScreen } from "@/components/atlas/TrendMapScreen";
 
-/** 예전 미리보기 URL — Atlas는 홈(/)에 통합됨. */
-export default function AtlasPreviewRedirectPage() {
-  redirect("/");
+export const metadata = {
+  title: "Atlas · Trend Map | Fashionmap",
+  description: "Live global fashion signals — tap a city to explore its edit.",
+};
+
+export default function AtlasPreviewPage() {
+  return (
+    <main className="theme-dark min-h-[100dvh]">
+      <TrendMapScreen />
+    </main>
+  );
 }

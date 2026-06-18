@@ -3,13 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo } from "react";
-import { getAffiliateLink } from "@/lib/affiliate";
 import { parseProductFromSearchParams } from "@/lib/product";
-import { formatProductPrice } from "@/lib/price";
-import { ProductHero } from "@/components/product/ProductHero";
-import { PurchaseBar } from "@/components/product/PurchaseBar";
-import { MallBadge } from "@/components/product/MallBadge";
-import { Pill } from "@/components/ui/Pill";
+import { ProductDetailScreen } from "@/components/product/ProductDetailScreen";
 
 function ProductDetailBody() {
   const searchParams = useSearchParams();
@@ -21,90 +16,27 @@ function ProductDetailBody() {
   if (!product) {
     return (
       <div className="mx-auto max-w-lg px-8 py-32 text-center">
-        <p className="eyebrow mb-4">Not found</p>
-        <p className="editorial-display text-2xl">
+        <p className="mb-4 font-mono text-[8px] uppercase tracking-[0.14em] text-on-surface-variant">
+          Not found
+        </p>
+        <p className="font-playfair text-2xl text-on-surface">
           We couldn&apos;t find this product.
         </p>
         <Link
-          href="/"
-          className="underline-link mt-8 inline-block text-sm text-on-surface"
-          data-active="true"
+          href="/feed"
+          className="mt-8 inline-block font-mono text-[10px] uppercase tracking-[0.18em] text-on-surface underline-offset-2 hover:underline"
         >
-          Back to home
+          Back to feed
         </Link>
       </div>
     );
   }
 
-  const affiliateHref = getAffiliateLink(product.link, product.mallName ?? "");
-  const brandTop = deriveBrandLine(product.name);
-  const productLine = stripBrandPrefix(product.name, brandTop);
-
   return (
     <main className="min-h-[100dvh] bg-surface text-on-surface">
-      <ProductHero product={product} />
-
-      <section className="px-5 pb-40 pt-6">
-        <div className="flex flex-wrap items-center gap-2">
-          {product.mallName && (
-            <MallBadge mall={product.mallName} variant="outline" />
-          )}
-          <Pill variant="solid">JUST IN</Pill>
-          <span className="ml-auto text-[10px] tracking-[0.22em] text-on-surface-variant">
-            P01
-          </span>
-        </div>
-
-        {brandTop && (
-          <p className="mt-4 text-[12px] font-semibold tracking-[0.18em] text-on-surface">
-            {brandTop.toUpperCase()}
-          </p>
-        )}
-
-        <h1 className="editorial-display mt-1 text-[26px] leading-tight">
-          {productLine}
-        </h1>
-
-        <div className="mt-5 flex items-baseline gap-3 tabular-nums">
-          <span className="text-[22px] font-semibold">
-            {formatProductPrice(product)}
-          </span>
-          {/* 원가·할인율은 실데이터가 없으므로 이번 라운드 비노출 */}
-        </div>
-
-        <section className="mt-10 space-y-3 border-t border-outline-variant/70 pt-6 text-[13px] leading-relaxed text-on-surface-variant">
-          <p>
-            This listing is based on retail data from {product.mall}. Purchases
-            go to the official {product.mallName ?? product.mall} store — price
-            and stock are confirmed on their site after you tap through.
-          </p>
-          <p>Free shipping and duties-included pricing follow each retailer&apos;s policy.</p>
-        </section>
-      </section>
-
-      <PurchaseBar product={product} affiliateHref={affiliateHref} />
+      <ProductDetailScreen product={product} />
     </main>
   );
-}
-
-/** 상품명에서 선두 영문 브랜드 추정 (예: "MAISON ALÉNE Cashmere..." → "Maison Aléne"). */
-function deriveBrandLine(name: string): string | undefined {
-  const match = name.match(/^([A-Z][A-Z\u00C0-\u00FF&'-]*(?:\s+[A-Z][A-Z\u00C0-\u00FF&'-]*){0,3})\s/);
-  if (match) {
-    return match[1]
-      .toLowerCase()
-      .replace(/(^|\s)(\S)/g, (_, p1, p2: string) => p1 + p2.toUpperCase());
-  }
-  return undefined;
-}
-
-function stripBrandPrefix(name: string, brand?: string): string {
-  if (!brand) return name;
-  const upper = brand.toUpperCase();
-  if (name.toUpperCase().startsWith(upper)) {
-    return name.slice(upper.length).trim();
-  }
-  return name;
 }
 
 export default function ProductPage() {
@@ -112,7 +44,9 @@ export default function ProductPage() {
     <Suspense
       fallback={
         <div className="flex min-h-[50dvh] items-center justify-center">
-          <span className="eyebrow">Loading</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-on-surface-variant">
+            Loading
+          </span>
         </div>
       }
     >

@@ -40,7 +40,10 @@ export function HeartToggle({
       }}
       className={cn(
         CONTAINER[size],
-        "inline-flex items-center justify-center rounded-full border border-outline-variant bg-surface/90 text-on-surface shadow-[0_2px_6px_rgba(0,0,0,0.06)] backdrop-blur transition-transform active:scale-95",
+        "inline-flex items-center justify-center rounded-full border bg-surface/95 shadow-[0_1px_6px_rgba(0,0,0,0.06)] backdrop-blur transition-all active:scale-95",
+        active
+          ? "border-on-surface bg-on-surface text-on-primary-container"
+          : "border-outline-variant text-on-surface-variant hover:border-on-surface hover:text-on-surface",
         className
       )}
     >

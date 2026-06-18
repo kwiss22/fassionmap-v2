@@ -119,13 +119,17 @@ export function HomeHero() {
             type="button"
             onClick={() => submit(prompt)}
             disabled={prompt.trim().length < 2}
-            className="inline-flex h-12 items-center justify-center bg-on-surface px-8 text-[12px] font-medium tracking-[0.22em] text-on-primary-container uppercase transition-opacity hover:opacity-90 disabled:opacity-40 sm:min-w-[200px]"
+            className="relative inline-flex h-12 items-center justify-center overflow-hidden rounded-[14px] bg-on-surface px-8 font-body text-[14px] font-semibold text-on-primary-container transition-opacity hover:opacity-90 disabled:opacity-40 sm:min-w-[200px]"
           >
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-gradient-to-l from-[rgba(184,255,46,0.12)] to-transparent"
+            />
             Get curation
           </button>
           <Link
             href="/saved?tab=looks"
-            className="inline-flex h-12 items-center justify-center border border-outline-variant px-6 text-[12px] font-medium tracking-[0.2em] text-on-surface uppercase transition-colors hover:border-on-surface"
+            className="inline-flex h-12 items-center justify-center rounded-[14px] border border-outline-variant px-6 font-body text-[12px] font-medium tracking-[0.12em] text-on-surface uppercase transition-colors hover:border-on-surface"
           >
             Saved looks
           </Link>

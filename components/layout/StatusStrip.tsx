@@ -2,19 +2,28 @@
 
 import { useCurrentIssue } from "@/lib/hooks/use-current-issue";
 import { useSaved } from "@/lib/hooks/use-saved";
+import { cn } from "@/lib/utils";
 
-/**
- * TopBar 아래 얇은 발행·저장 상태 strip.
- * 좌: VOL · SEASON / 우: SAVED count만 — 중복 트래킹 라벨 최소화.
- */
-export function StatusStrip() {
+export function StatusStrip({ dark = false }: { dark?: boolean }) {
   const { items: saved } = useSaved();
   const { issue } = useCurrentIssue();
 
   return (
-    <div className="border-b border-outline-variant/70 bg-surface/95 backdrop-blur-md">
-      <div className="mx-auto flex h-7 items-center justify-between px-5 text-[10px] tracking-[0.22em] text-on-surface-variant lg:px-8">
-        <span className="font-medium text-on-surface">
+    <div
+      className={cn(
+        "border-b backdrop-blur-md",
+        dark
+          ? "border-[rgba(57,255,122,0.08)] bg-[#060a08]/95"
+          : "border-outline-variant/70 bg-surface/95"
+      )}
+    >
+      <div
+        className={cn(
+          "mx-auto flex h-7 items-center justify-between px-5 font-mono text-[9px] tracking-[0.18em] lg:px-8",
+          dark ? "text-[#2a4030]" : "text-on-surface-variant"
+        )}
+      >
+        <span className={cn("font-medium", dark ? "text-[var(--color-neon)]" : "text-on-surface")}>
           VOL.&nbsp;{issue.vol}
           <span aria-hidden className="mx-2 opacity-50">
             ·
@@ -23,7 +32,12 @@ export function StatusStrip() {
         </span>
         <span>
           SAVED&nbsp;
-          <span className="font-medium text-on-surface tabular-nums">
+          <span
+            className={cn(
+              "font-medium tabular-nums",
+              dark ? "text-[#e8f0eb]" : "text-on-surface"
+            )}
+          >
             {saved.length}
           </span>
         </span>

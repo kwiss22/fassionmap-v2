@@ -1,5 +1,4 @@
-import { TopBar } from "@/components/layout/TopBar";
-import { FeedClient } from "./FeedClient";
+import { FeedLooksScreen } from "@/components/feed/FeedLooksScreen";
 
 export const metadata = {
   title: "Feed | Fashionmap",
@@ -8,8 +7,7 @@ export const metadata = {
 export default function FeedPage() {
   return (
     <main className="min-h-[100dvh] bg-surface text-on-surface">
-      <TopBar title="Feed" />
-      <FeedClient />
+      <FeedLooksScreen />
     </main>
   );
 }
