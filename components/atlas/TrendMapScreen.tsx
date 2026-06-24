@@ -23,23 +23,23 @@ export function TrendMapScreen() {
   }, []);
 
   return (
-    <div className="flex min-h-[100dvh] flex-col overflow-hidden bg-[#060a08] text-[#e8f0eb]">
-      <header className="flex shrink-0 items-center justify-between border-b border-[rgba(57,255,122,0.08)] px-5 pb-3 pt-2">
+    <div className="app-tab-screen relative flex flex-col bg-surface text-on-surface">
+      <header className="flex shrink-0 items-center justify-between border-b border-outline-variant/60 px-5 pb-3 pt-2">
         <div>
           <div className="mb-0.5 flex items-center gap-1">
             <GlobeIcon />
-            <span className="font-mono text-[7px] uppercase tracking-[0.18em] text-[var(--color-neon)]">
+            <span className="font-mono text-[7px] uppercase tracking-[0.18em] text-on-surface-variant">
               Fashionmap · Atlas
             </span>
           </div>
-          <h1 className="display-caps text-xl text-[#e8f0eb]">Trend Map</h1>
+          <h1 className="display-caps text-xl text-on-surface">Trend Map</h1>
         </div>
-        <div className="inline-flex items-center gap-1 rounded-full border border-[rgba(57,255,122,0.18)] bg-[rgba(57,255,122,0.08)] px-2.5 py-1.5">
+        <div className="inline-flex items-center gap-1 rounded-full border border-outline-variant bg-surface-container px-2.5 py-1.5">
           <span
-            className="h-[5px] w-[5px] rounded-full bg-[var(--color-neon)] shadow-[0_0_6px_var(--color-neon)]"
+            className="h-[5px] w-[5px] rounded-full bg-[var(--color-lime)] shadow-[0_0_6px_var(--color-lime)]"
             aria-hidden
           />
-          <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[var(--color-neon)]">
+          <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-on-surface">
             Live
           </span>
         </div>
@@ -56,10 +56,10 @@ export function TrendMapScreen() {
           <defs>
             <radialGradient id="atlas-vignette" cx="50%" cy="50%" r="70%">
               <stop offset="0%" stopColor="transparent" />
-              <stop offset="100%" stopColor="#060a08" stopOpacity="0.65" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.55" />
             </radialGradient>
           </defs>
-          <rect width="350" height="200" fill="#060d09" />
+          <rect width="350" height="200" fill="#f4f4f4" />
           {[20, 40, 60, 80, 100, 120, 140, 160].map((y) => (
             <line
               key={`h-${y}`}
@@ -67,9 +67,9 @@ export function TrendMapScreen() {
               y1={y}
               x2="350"
               y2={y}
-              stroke="#39ff7a"
+              stroke="#111111"
               strokeWidth="0.2"
-              opacity="0.07"
+              opacity="0.06"
             />
           ))}
           {[35, 70, 105, 140, 175, 210, 245, 280, 315].map((x) => (
@@ -79,9 +79,9 @@ export function TrendMapScreen() {
               y1="0"
               x2={x}
               y2="200"
-              stroke="#39ff7a"
+              stroke="#111111"
               strokeWidth="0.2"
-              opacity="0.07"
+              opacity="0.06"
             />
           ))}
           <line
@@ -89,9 +89,9 @@ export function TrendMapScreen() {
             y1="100"
             x2="350"
             y2="100"
-            stroke="#39ff7a"
+            stroke="#111111"
             strokeWidth="0.5"
-            opacity="0.18"
+            opacity="0.1"
             strokeDasharray="3,4"
           />
           <line
@@ -99,17 +99,17 @@ export function TrendMapScreen() {
             y1="0"
             x2="175"
             y2="200"
-            stroke="#39ff7a"
+            stroke="#111111"
             strokeWidth="0.5"
-            opacity="0.12"
+            opacity="0.08"
             strokeDasharray="3,4"
           />
           {TREND_MAP_LAND_PATHS.map((d, i) => (
             <path
               key={i}
               d={d}
-              fill="#0f1a12"
-              stroke="#1e3022"
+              fill="#e8ece9"
+              stroke="#c5cec8"
               strokeWidth="0.6"
             />
           ))}
@@ -120,7 +120,7 @@ export function TrendMapScreen() {
             y2={scanLine}
             stroke="#39ff7a"
             strokeWidth="0.4"
-            opacity="0.1"
+            opacity="0.2"
           />
           {TREND_MAP_CITIES.map((city) => (
             <MapCityMarker
@@ -146,7 +146,7 @@ export function TrendMapScreen() {
         ) : null}
       </AnimatePresence>
 
-      {!selCity && <div className="h-20 shrink-0" aria-hidden />}
+      {!selCity && <div className="h-2 shrink-0" aria-hidden />}
     </div>
   );
 }
@@ -263,8 +263,7 @@ function TrendCityPanel({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 220, opacity: 0 }}
       transition={{ type: "spring", stiffness: 340, damping: 32 }}
-      className="relative shrink-0 overflow-hidden border-t bg-[#0a1009] px-5 pb-20 pt-3.5"
-      style={{ borderTopColor: `${city.neon}30` }}
+      className="relative shrink-0 overflow-hidden border-t border-outline-variant/60 bg-surface px-5 pb-3 pt-3.5"
     >
       <div
         className="absolute inset-x-0 top-0 h-0.5"
@@ -285,7 +284,7 @@ function TrendCityPanel({
               {city.country}
             </span>
           </div>
-          <h2 className="display-caps text-lg text-[#e8f0eb]">{city.name}</h2>
+          <h2 className="display-caps text-lg text-on-surface">{city.name}</h2>
           <p
             className="font-[family-name:var(--font-rajdhani)] text-[13px] tracking-wide"
             style={{ color: city.neon }}
@@ -298,11 +297,11 @@ function TrendCityPanel({
             type="button"
             onClick={onClose}
             aria-label="Close city panel"
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)]"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-outline-variant bg-surface-container"
           >
             <CloseIcon />
           </button>
-          <div className="inline-flex items-center gap-0.5 rounded-full border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.04)] px-1.5 py-0.5">
+          <div className="inline-flex items-center gap-0.5 rounded-full border border-outline-variant bg-surface-container px-1.5 py-0.5">
             <FlameIcon />
             <span className="font-mono text-[8px] text-[#ff6a3c]">
               {city.heat}
@@ -332,8 +331,7 @@ function TrendCityPanel({
           {city.thumbs.map((src, i) => (
             <div
               key={i}
-              className="relative h-[60px] flex-1 overflow-hidden rounded-md border bg-[#111a13]"
-              style={{ borderColor: `${city.neon}18` }}
+              className="relative h-[60px] flex-1 overflow-hidden rounded-md border border-outline-variant/80 bg-surface-container"
             >
               <Image
                 src={src}
@@ -357,12 +355,12 @@ function TrendCityPanel({
         </Link>
       </div>
 
-      <div className="mt-2 flex items-center gap-1 border-t border-[rgba(255,255,255,0.04)] pt-2">
+      <div className="mt-2 flex items-center gap-1 border-t border-outline-variant/60 pt-2">
         <TrendingIcon />
-        <span className="font-mono text-[8px] tracking-[0.08em] text-[var(--color-neon)]">
+        <span className="font-mono text-[8px] tracking-[0.08em] text-on-surface-variant">
           {city.stat}
         </span>
-        <span className="ml-auto font-mono text-[7px] tracking-[0.06em] text-[#1e3022]">
+        <span className="ml-auto font-mono text-[7px] tracking-[0.06em] text-on-surface-variant">
           ATLAS · LIVE
         </span>
       </div>
@@ -372,11 +370,18 @@ function TrendCityPanel({
 
 function GlobeIcon() {
   return (
-    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="#39ff7a" strokeWidth="2" />
+    <svg
+      width="9"
+      height="9"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+      className="text-on-surface-variant"
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
       <path
         d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"
-        stroke="#39ff7a"
+        stroke="currentColor"
         strokeWidth="1.5"
       />
     </svg>
@@ -401,7 +406,7 @@ function CloseIcon() {
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M6 6l12 12M18 6 6 18"
-        stroke="#3a5040"
+        stroke="#888888"
         strokeWidth="2"
         strokeLinecap="round"
       />
@@ -436,10 +441,17 @@ function ChevronRightIcon() {
 
 function TrendingIcon() {
   return (
-    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      width="9"
+      height="9"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+      className="text-on-surface-variant"
+    >
       <path
         d="M4 16l6-6 4 4 6-8"
-        stroke="#39ff7a"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

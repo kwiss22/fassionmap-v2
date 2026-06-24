@@ -55,7 +55,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
             <SparklesIcon className="h-2.5 w-2.5 text-ink" />
           </div>
           <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-on-surface-variant">
-            Fashionmap · AI Setup
+            Fassionmap · AI Setup
           </span>
         </div>
 

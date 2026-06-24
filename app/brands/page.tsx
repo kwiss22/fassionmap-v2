@@ -31,7 +31,7 @@ export default function BrandsPage() {
           explore brand worlds here.
         </p>
         <Link
-          href="/"
+          href="/feed"
           className="mt-4 inline-block text-[11px] tracking-[0.2em] text-on-surface-variant uppercase underline-link"
         >
           ← AI styling home

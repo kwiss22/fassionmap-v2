@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { parseProductFromSearchParams } from "@/lib/product";
-import { ProductDetailScreen } from "@/components/product/ProductDetailScreen";
+import { AffiliateWebviewScreen } from "@/components/checkout/AffiliateWebviewScreen";
 
-function ProductDetailBody() {
+function WebviewBody() {
   const searchParams = useSearchParams();
   const product = useMemo(
     () => parseProductFromSearchParams(searchParams),
@@ -20,7 +20,7 @@ function ProductDetailBody() {
           Not found
         </p>
         <p className="font-playfair text-2xl text-on-surface">
-          We couldn&apos;t find this product.
+          We couldn&apos;t open this checkout view.
         </p>
         <Link
           href="/feed"
@@ -32,25 +32,21 @@ function ProductDetailBody() {
     );
   }
 
-  return (
-    <main className="h-[100dvh] bg-surface text-on-surface">
-      <ProductDetailScreen product={product} />
-    </main>
-  );
+  return <AffiliateWebviewScreen product={product} />;
 }
 
-export default function ProductPage() {
+export default function CheckoutWebviewPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[50dvh] items-center justify-center">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-on-surface-variant">
+        <div className="flex min-h-[50dvh] items-center justify-center bg-[#0a0a0a]">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#555555]">
             Loading
           </span>
         </div>
       }
     >
-      <ProductDetailBody />
+      <WebviewBody />
     </Suspense>
   );
 }

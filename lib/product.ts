@@ -38,7 +38,7 @@ export function productDedupeKey(p: Product): string {
   return `i:${p.id}`;
 }
 
-export function productToDetailHref(product: Product): string {
+function buildProductSearchParams(product: Product): URLSearchParams {
   const q = new URLSearchParams();
   q.set("id", product.id);
   q.set("n", product.name);
@@ -53,7 +53,19 @@ export function productToDetailHref(product: Product): string {
   if (source) {
     q.set("src", source);
   }
-  return `/product?${q.toString()}`;
+  return q;
+}
+
+export function productToDetailHref(product: Product): string {
+  return `/product?${buildProductSearchParams(product).toString()}`;
+}
+
+export function productToWebviewHref(product: Product): string {
+  return `/checkout/webview?${buildProductSearchParams(product).toString()}`;
+}
+
+export function productToSuccessHref(product: Product): string {
+  return `/checkout/success?${buildProductSearchParams(product).toString()}`;
 }
 
 export function inferProductSource(

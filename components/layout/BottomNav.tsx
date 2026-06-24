@@ -12,7 +12,12 @@ type NavItem = {
 };
 
 const NAV_ITEMS: readonly NavItem[] = [
-  { href: "/", label: "Home", icon: <HomeIcon />, match: (p) => p === "/" },
+  {
+    href: "/feed",
+    label: "Home",
+    icon: <HomeIcon />,
+    match: (p) => p === "/feed" || p.startsWith("/feed/"),
+  },
   {
     href: "/atlas-preview",
     label: "Atlas",
@@ -25,35 +30,39 @@ const NAV_ITEMS: readonly NavItem[] = [
     icon: <FlaskIcon />,
     match: (p) => p.startsWith("/search") && p.includes("mode=ai"),
   },
-  { href: "/me", label: "Profile", icon: <UserIcon />, match: (p) => p.startsWith("/me") },
+  {
+    href: "/feed",
+    label: "Profile",
+    icon: <UserIcon />,
+    match: (_p) => false,
+  },
 ];
 
 export function BottomNav() {
   const pathname = usePathname() ?? "/";
   const dark =
-    pathname.startsWith("/atlas") ||
-    (pathname.startsWith("/search") && pathname.includes("mode=ai"));
+    pathname.startsWith("/search") && pathname.includes("mode=ai");
 
   return (
     <nav
       aria-label="Primary"
       className={cn(
-        "bottom-nav fixed bottom-0 left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t backdrop-blur-md sm:max-w-[720px] lg:hidden",
+        "bottom-nav z-40 w-full shrink-0 border-t px-5 pt-2 pb-6 backdrop-blur-md lg:hidden",
         dark
           ? "border-[rgba(57,255,122,0.08)] bg-[rgba(6,10,8,0.97)]"
-          : "border-outline-variant bg-surface/95"
+          : "border-[#f0f0f0] bg-surface/95"
       )}
     >
-      <ul className="grid h-[3.75rem] grid-cols-4">
+      <ul className="grid grid-cols-4">
         {NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           return (
-            <li key={item.href}>
+            <li key={item.label}>
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-full flex-col items-center justify-center gap-1 font-mono text-[8px] tracking-[0.1em] uppercase transition-colors",
+                  "flex flex-col items-center justify-center gap-1 py-0 font-mono text-[7px] tracking-[0.08em] uppercase transition-colors",
                   !active && (dark ? "text-[#1e3022]" : "text-on-surface-variant"),
                   active && !dark && "text-on-surface",
                   active && dark && "text-[var(--color-neon)]"

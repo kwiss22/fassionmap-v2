@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function AtlasPreviewPage() {
   return (
-    <main className="theme-dark min-h-[100dvh]">
+    <main className="h-full bg-surface">
       <TrendMapScreen />
     </main>
   );

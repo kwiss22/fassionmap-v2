@@ -11,10 +11,10 @@ export const LAB_CATEGORIES: LabCategory[] = [
 ];
 
 export const LAB_SLOT_HEIGHT: Record<LabCategory, string> = {
-  Top: "84px",
-  Bottom: "80px",
-  Shoes: "60px",
-  Accessory: "50px",
+  Top: "64px",
+  Bottom: "56px",
+  Shoes: "48px",
+  Accessory: "40px",
 };
 
 export const LAB_CATEGORY_QUERIES: Record<LabCategory, string> = {

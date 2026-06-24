@@ -236,7 +236,7 @@ function EmptyState() {
         Tap the heart on any product card to save it here.
       </p>
       <Link
-        href="/"
+        href="/feed"
         className="mt-4 inline-flex items-center gap-2 rounded-full border border-on-surface px-5 py-2.5 text-[11px] tracking-[0.18em]"
       >
         Browse home →

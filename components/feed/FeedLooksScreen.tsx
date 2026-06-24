@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import type { Product } from "@/lib/product";
 import { useRecommendedLooks } from "@/lib/hooks/use-recommended-looks";
 import {
   FEED_FILTERS,
   LOOK_FILTER,
+  defaultFeedFilterFromVibes,
   feedGreeting,
   readFitPreference,
+  readVibePreferences,
   type FeedFilterId,
 } from "@/lib/feed-look-meta";
 import { FeedLookArticle } from "@/components/feed/FeedLookArticle";
@@ -32,8 +33,17 @@ function writeSavedLooks(ids: Set<string>) {
   localStorage.setItem(SAVED_LOOKS_KEY, JSON.stringify([...ids]));
 }
 
-export function FeedLooksScreen() {
-  const { looks, loading } = useRecommendedLooks(4);
+import type { StylingLook } from "@/lib/styling-looks";
+
+export function FeedLooksScreen({
+  initialLooks,
+}: {
+  initialLooks?: StylingLook[];
+}) {
+  const { looks, loading, error, reload } = useRecommendedLooks(
+    4,
+    initialLooks
+  );
   const [filter, setFilter] = useState<FeedFilterId>("all");
   const [fit, setFit] = useState("Regular");
   const [savedLooks, setSavedLooks] = useState<Set<string>>(() => new Set());
@@ -43,6 +53,7 @@ export function FeedLooksScreen() {
   useEffect(() => {
     setFit(readFitPreference());
     setSavedLooks(readSavedLooks());
+    setFilter(defaultFeedFilterFromVibes(readVibePreferences()));
   }, []);
 
   const filteredLooks = useMemo(() => {
@@ -61,7 +72,7 @@ export function FeedLooksScreen() {
   };
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col bg-surface text-on-surface">
+    <div className="relative flex app-tab-screen flex-col bg-surface text-on-surface">
       <header className="shrink-0 border-b border-outline-variant/60 px-5 pb-3 pt-2.5">
         <div className="flex items-center justify-between">
           <div>
@@ -69,7 +80,7 @@ export function FeedLooksScreen() {
               {greeting}
             </p>
             <h1 className="font-playfair text-[22px] font-normal leading-none tracking-tight text-on-surface">
-              Fashionmap
+              Fassionmap
             </h1>
           </div>
           <div className="inline-flex items-center gap-1.5 rounded-full bg-ink px-2.5 py-1.5">
@@ -85,38 +96,43 @@ export function FeedLooksScreen() {
       </header>
 
       <div className="shrink-0 border-b border-outline-variant/40 px-5 py-2">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {FEED_FILTERS.map((f) => {
-              const active = filter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setFilter(f.id)}
-                  className={cn(
-                    "shrink-0 rounded-full border px-3.5 py-1.5 font-body text-[11px] transition-colors",
-                    active
-                      ? "border-ink bg-ink text-white"
-                      : "border-outline-variant text-on-surface-variant"
-                  )}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
-          <Link
-            href="/feed/following"
-            className="shrink-0 font-mono text-[8px] uppercase tracking-[0.12em] text-on-surface-variant underline-offset-2 hover:underline"
-          >
-            Brands
-          </Link>
+        <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {FEED_FILTERS.map((f) => {
+            const active = filter === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setFilter(f.id)}
+                className={cn(
+                  "shrink-0 rounded-full border px-3.5 py-1.5 font-body text-[11px] transition-colors",
+                  active
+                    ? "border-ink bg-ink text-white"
+                    : "border-outline-variant text-on-surface-variant"
+                )}
+              >
+                {f.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {loading ? (
+        {error && !loading ? (
+          <div className="px-5 py-10 text-center">
+            <p className="mb-3 font-body text-sm text-on-surface-variant">
+              Couldn&apos;t load looks. Check your connection or Naver API keys.
+            </p>
+            <button
+              type="button"
+              onClick={() => void reload()}
+              className="rounded-full border border-ink bg-ink px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-white"
+            >
+              Retry
+            </button>
+          </div>
+        ) : loading ? (
           <FeedSkeleton />
         ) : filteredLooks.length === 0 ? (
           <p className="px-5 py-16 text-center font-body text-sm text-on-surface-variant">

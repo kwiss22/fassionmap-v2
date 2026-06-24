@@ -7,45 +7,45 @@ import { useRouter } from "next/navigation";
 import { AIChip } from "@/components/ui/AIChip";
 import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { HOME_AGENT_PROMPTS } from "@/lib/home-agent-prompts";
+import { useNaverProducts } from "@/lib/hooks/use-naver-products";
 import { cn } from "@/lib/utils";
 
-const HERO_IMAGE = "/hero.png";
+const HERO_FALLBACK = "/hero.png";
+const HERO_QUERIES = ["캐시미어 코트", "여성 코트", "women coat"] as const;
 
 function buildAiSearchUrl(prompt: string) {
   const params = new URLSearchParams();
-  params.set("mode", "ai");
+  params.set("mode", "curate");
   params.set("q", prompt.trim());
   return `/search?${params.toString()}`;
 }
 
 function HeroLookImage({
+  src,
+  alt,
   priority,
   className,
 }: {
+  src: string;
+  alt: string;
   priority?: boolean;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const imageSrc = failed ? HERO_FALLBACK : src;
 
   return (
     <div className={cn("relative h-full w-full overflow-hidden", className)}>
-      {failed ? (
-        <div
-          className="silhouette-bg absolute inset-0"
-          role="img"
-          aria-label="Editorial look placeholder"
-        />
-      ) : (
-        <Image
-          src={HERO_IMAGE}
-          alt="AI curation board — items to styled looks"
-          fill
-          priority={priority}
-          sizes="(max-width: 1024px) 100vw, 58vw"
-          className="object-cover object-center"
-          onError={() => setFailed(true)}
-        />
-      )}
+      <Image
+        key={imageSrc}
+        src={imageSrc}
+        alt={alt}
+        fill
+        priority={priority}
+        sizes="(max-width: 1024px) 100vw, 58vw"
+        className="object-cover object-center"
+        onError={() => setFailed(true)}
+      />
     </div>
   );
 }
@@ -57,6 +57,10 @@ function HeroLookImage({
 export function HomeHero() {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
+  const { items } = useNaverProducts(HERO_QUERIES, { take: 1, display: 24 });
+  const heroProduct = items[0];
+  const heroSrc = heroProduct?.imageUrl ?? HERO_FALLBACK;
+  const heroAlt = heroProduct?.name ?? "AI curation board — items to styled looks";
 
   const submit = useCallback(
     (text: string) => {
@@ -71,7 +75,7 @@ export function HomeHero() {
     <section className="lg:grid lg:grid-cols-12 lg:items-stretch lg:gap-x-10 lg:px-10 lg:py-24">
       {/* Look image — intrinsic 1024×793; desktop 7 cols */}
       <div className="relative aspect-[1024/793] w-full lg:col-span-7 lg:col-start-6 lg:row-start-1">
-        <HeroLookImage priority />
+        <HeroLookImage src={heroSrc} alt={heroAlt} priority />
       </div>
 
       {/* Copy + input — desktop left 5 cols */}

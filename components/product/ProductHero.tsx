@@ -29,7 +29,7 @@ export function ProductHero({
       {/* Top controls */}
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-4">
         <Link
-          href="/"
+          href="/feed"
           aria-label="Go back"
           className="flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 backdrop-blur"
         >

@@ -34,8 +34,12 @@ export function FeedLookArticle({
   const products = look.pieces
     .map((p) => p.product)
     .filter((p): p is Product => p != null);
+  const outerPiece = look.pieces.find((p) => p.role === "outer")?.product;
   const heroProduct =
-    products.find((p) => p.imageUrl) ?? products[0] ?? null;
+    (outerPiece?.imageUrl ? outerPiece : null) ??
+    products.find((p) => p.imageUrl) ??
+    products[0] ??
+    null;
   const tags = LOOK_TAGS[look.id] ?? [];
   const edition = feedEdition(index);
   const firstDetail = products[0];
@@ -45,7 +49,6 @@ export function FeedLookArticle({
       <div className="flex items-center justify-between px-5 pb-2.5 pt-3.5">
         <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-on-surface-variant">
           {edition}
-          {look.context ? ` · ${look.context}` : ""}
         </span>
         <button
           type="button"
@@ -78,9 +81,9 @@ export function FeedLookArticle({
           aria-hidden
         />
         <div className="absolute bottom-4 left-4">
-          {look.context && (
+          {(look.subtitle ?? look.context) && (
             <p className="mb-0.5 font-mono text-[8px] uppercase tracking-[0.14em] text-white/50">
-              {look.context}
+              {look.subtitle ?? look.context}
             </p>
           )}
           <h2 className="font-playfair text-2xl font-normal leading-none text-white">

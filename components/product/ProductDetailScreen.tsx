@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/product";
-import { getAffiliateLink, isAffiliateSupported } from "@/lib/affiliate";
+import { productToWebviewHref } from "@/lib/product";
+import { isAffiliateSupported } from "@/lib/affiliate";
 import { extractBrand } from "@/lib/brand-extract";
 import { readFitPreference } from "@/lib/onboarding-preferences";
 import { formatProductPrice } from "@/lib/price";
@@ -29,10 +30,7 @@ export function ProductDetailScreen({ product }: ProductDetailScreenProps) {
     product.mallName ??
     product.mall ??
     "Brand";
-  const affiliateHref = getAffiliateLink(
-    product.link,
-    product.mallName ?? product.mall ?? ""
-  );
+  const webviewHref = productToWebviewHref(product);
   const mallLabel = formatMallDisplay(product.mallName ?? product.mall ?? "Store");
   const priceLabel = formatProductPrice(product);
   const mallInitials = mallLabel.slice(0, 2).toUpperCase();
@@ -142,7 +140,7 @@ export function ProductDetailScreen({ product }: ProductDetailScreenProps) {
             shipping="Ships from partner store"
             shippingColor="#555555"
             price={priceLabel}
-            affiliateHref={affiliateHref}
+            affiliateHref={webviewHref}
             primary
             showBestBadge={isAffiliate}
           />
@@ -156,17 +154,15 @@ export function ProductDetailScreen({ product }: ProductDetailScreenProps) {
               shipping="Global shipping"
               shippingColor="#34a853"
               price={priceLabel}
-              affiliateHref={affiliateHref}
+              affiliateHref={webviewHref}
             />
           )}
         </div>
       </div>
 
       <footer className="absolute inset-x-0 bottom-0 border-t border-outline-variant/60 bg-surface/95 px-5 pb-7 pt-3 backdrop-blur-md">
-        <a
-          href={affiliateHref}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href={webviewHref}
           className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[13px] border-0 bg-ink py-3.5"
         >
           <span
@@ -177,7 +173,7 @@ export function ProductDetailScreen({ product }: ProductDetailScreenProps) {
           <span className="font-body text-sm font-semibold text-white">
             Get AI Affiliate Discount
           </span>
-        </a>
+        </Link>
         <Link
           href="/feed"
           className="mt-2 block text-center font-mono text-[8px] uppercase tracking-[0.12em] text-on-surface-variant"
@@ -256,10 +252,8 @@ function AffiliateOfferRow({
           <p className="font-mono text-[17px] font-bold leading-none tracking-tight text-on-surface">
             {price}
           </p>
-          <a
+          <Link
             href={affiliateHref}
-            target="_blank"
-            rel="noopener noreferrer"
             className={cn(
               "mt-1 inline-flex items-center gap-1 rounded-md border px-2.5 py-1 font-body text-[10px] font-medium",
               primary
@@ -269,7 +263,7 @@ function AffiliateOfferRow({
           >
             Buy Now
             <ExternalLinkIcon light={primary} />
-          </a>
+          </Link>
         </div>
       </div>
     </div>

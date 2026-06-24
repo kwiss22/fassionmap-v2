@@ -1,66 +1,70 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Product } from "@/lib/product";
+import type { StylingLook } from "@/lib/styling-looks";
 import {
   HOME_LOOK_DEFS,
-  mergeLookProducts,
   lookDefToEmptyLook,
-  type LookPieceRole,
-  type StylingLook,
 } from "@/lib/styling-looks";
+import { looksHaveProducts } from "@/lib/feed-looks";
 
 type State = {
   looks: StylingLook[];
   loading: boolean;
+  error?: string;
 };
 
-async function fetchFirstProduct(query: string): Promise<Product | null> {
-  const url = `/api/naver-products?query=${encodeURIComponent(query)}&start=1&display=8&sort=sim`;
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const json = (await res.json()) as { items?: Product[] };
-  return json.items?.[0] ?? null;
-}
-
 /**
- * 홈 추천 룩 — 정의된 슬롯별로 네이버 API 1건씩만 가져와 룩 카드를 구성한다.
- * (전체 AI 큐레이션 API는 홈에서 호출하지 않음 — 비용·속도)
+ * Feed 룩 — `/api/feed-looks` 단일 호출 (서버에서 네이ver API + dedupe).
  */
-export function useRecommendedLooks(maxLooks = 4) {
+export function useRecommendedLooks(
+  maxLooks = 4,
+  initialLooks?: StylingLook[]
+) {
+  const seeded = initialLooks && looksHaveProducts(initialLooks);
+
   const [state, setState] = useState<State>({
-    looks: HOME_LOOK_DEFS.slice(0, maxLooks).map(lookDefToEmptyLook),
-    loading: true,
+    looks:
+      initialLooks ??
+      HOME_LOOK_DEFS.slice(0, maxLooks).map(lookDefToEmptyLook),
+    loading: !seeded,
+    error: undefined,
   });
 
   const load = useCallback(async () => {
-    setState((s) => ({ ...s, loading: true }));
-    const defs = HOME_LOOK_DEFS.slice(0, maxLooks);
-
-    const looks = await Promise.all(
-      defs.map(async (def) => {
-        const roles = Object.keys(def.queries) as LookPieceRole[];
-        const entries = await Promise.all(
-          roles.map(async (role) => {
-            const q = def.queries[role];
-            if (!q) return [role, null] as const;
-            const product = await fetchFirstProduct(q);
-            return [role, product] as const;
-          })
-        );
-        const byRole = Object.fromEntries(entries) as Partial<
-          Record<LookPieceRole, Product | null>
-        >;
-        return mergeLookProducts(def, byRole);
-      })
-    );
-
-    setState({ looks, loading: false });
-  }, [maxLooks]);
+    setState((s) => ({ ...s, loading: true, error: undefined }));
+    try {
+      const res = await fetch("/api/feed-looks");
+      const json = (await res.json()) as {
+        looks?: StylingLook[];
+        error?: string;
+      };
+      if (!res.ok) {
+        setState((s) => ({
+          ...s,
+          loading: false,
+          error: json.error ?? `HTTP ${res.status}`,
+        }));
+        return;
+      }
+      setState({
+        looks: json.looks ?? [],
+        loading: false,
+        error: undefined,
+      });
+    } catch (err) {
+      setState((s) => ({
+        ...s,
+        loading: false,
+        error: err instanceof Error ? err.message : "Network error",
+      }));
+    }
+  }, []);
 
   useEffect(() => {
+    if (seeded) return;
     void load();
-  }, [load]);
+  }, [load, seeded]);
 
   return { ...state, reload: load };
 }

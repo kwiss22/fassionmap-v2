@@ -6,8 +6,8 @@ import {
   CURRENT_ISSUE,
   type EditorialIssue,
   type EditorialSection,
-  resolveBrandQuery,
 } from "@/lib/editorial";
+import { resolveNaverQueriesForSection } from "@/lib/editorial-naver-queries";
 
 type LoadedSection = {
   section: EditorialSection;
@@ -73,24 +73,39 @@ export function useHomeFeed() {
     await Promise.all(
       issue.sections.map(async (section, idx) => {
         const size = section.size ?? 6;
-        const query = buildQueryForSection(section);
-
-        if (!query) {
+        const queries = resolveNaverQueriesForSection(section);
+        if (queries.length === 0) {
           setState((prev) => patchSection(prev, idx, { items: [], loading: false }));
           return;
         }
 
         try {
-          const url = `/api/naver-products?query=${encodeURIComponent(query)}&start=1&display=${size * 2}&sort=sim`;
-          const res = await fetch(url, { signal: controller.signal });
-          const json = (await res.json()) as { items?: Product[]; error?: string };
-          if (controller.signal.aborted) return;
-          const items = (json.items ?? []).slice(0, size);
+          let items: Product[] = [];
+          let lastError: string | undefined;
+
+          for (const query of queries) {
+            const url = `/api/naver-products?query=${encodeURIComponent(query)}&start=1&display=${Math.min(size * 4, 40)}&sort=sim`;
+            const res = await fetch(url, { signal: controller.signal });
+            const json = (await res.json()) as {
+              items?: Product[];
+              error?: string;
+            };
+            if (controller.signal.aborted) return;
+            lastError = json.error;
+            const withImages = (json.items ?? []).filter((p) =>
+              Boolean(p.imageUrl?.trim())
+            );
+            if (withImages.length > 0) {
+              items = withImages.slice(0, size);
+              break;
+            }
+          }
+
           setState((prev) =>
             patchSection(prev, idx, {
               items,
               loading: false,
-              error: json.error,
+              error: lastError,
             })
           );
         } catch (err) {
@@ -117,21 +132,6 @@ export function useHomeFeed() {
   }, [loadAll]);
 
   return state;
-}
-
-function buildQueryForSection(section: EditorialSection): string {
-  switch (section.source.type) {
-    case "brand": {
-      const base = resolveBrandQuery(section.source.brandSlug);
-      return section.source.category
-        ? `${base} ${section.source.category}`
-        : base;
-    }
-    case "theme":
-      return section.source.query;
-    case "saved-ai":
-      return "캐시미어 니트";
-  }
 }
 
 function patchSection(

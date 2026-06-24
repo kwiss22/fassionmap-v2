@@ -12,6 +12,8 @@ export type LookPiece = {
 export type StylingLook = {
   id: string;
   title: string;
+  /** Hero overlay line — Make-style eyebrow under the title */
+  subtitle?: string;
   /** AI look summary — one sentence shown at the top of the card */
   reason: string;
   context?: string;
@@ -23,6 +25,7 @@ export type StylingLook = {
 export type StylingLookDef = {
   id: string;
   title: string;
+  subtitle?: string;
   reason: string;
   context?: string;
   pieceWhy?: Partial<Record<LookPieceRole, string>>;
@@ -41,9 +44,10 @@ const ROLE_LABELS: Record<LookPieceRole, string> = {
 export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
   {
     id: "rain-commute",
-    title: "Rainy day commute",
+    title: "Grey Matter",
+    subtitle: "City Outerwear",
     reason:
-      "For a rainy commute, AI paired a water-resistant outer with dark bottoms to keep your silhouette sharp without extra bulk.",
+      "A breezy commute layer — clean grey outerwear with structured bottoms, grounded in water-resistant fabric.",
     context: "Commute · Rain",
     pieceWhy: {
       outer:
@@ -51,15 +55,16 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       bottom: "Dark slacks ground the look and hide splash marks",
     },
     queries: {
-      outer: "women trench coat",
-      top: "women knit sweater",
-      bottom: "women slacks",
-      shoes: "women loafers",
+      outer: "여성 트렌치코트",
+      top: "여성 니트",
+      bottom: "여성 슬랙스",
+      shoes: "여성 로퍼",
     },
   },
   {
     id: "weekend-date",
-    title: "Weekend date",
+    title: "Soft Hour",
+    subtitle: "Weekend Date",
     reason:
       "AI balanced soft knit volume with an A-line skirt for a proportional, polished weekend date silhouette.",
     context: "Date · Weekend",
@@ -68,15 +73,16 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       bottom: "A-line skirt balances proportions for date-night polish",
     },
     queries: {
-      top: "women knit sweater",
-      bottom: "women midi skirt",
-      shoes: "women loafers",
-      bag: "women shoulder bag",
+      top: "여성 니트",
+      bottom: "여성 미디 스커트",
+      shoes: "여성 로퍼",
+      bag: "여성 숄더백",
     },
   },
   {
     id: "minimal-daily",
-    title: "Minimal daily",
+    title: "Quiet Uniform",
+    subtitle: "Minimal Daily",
     reason:
       "AI matched beige-and-white layers to your saved knit mood for a quiet daily uniform.",
     context: "Daily",
@@ -85,14 +91,15 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       bottom: "Wide pants keep the line relaxed but intentional",
     },
     queries: {
-      top: "women cashmere knit",
-      bottom: "women wide pants",
-      shoes: "women sneakers",
+      top: "캐시미어 니트",
+      bottom: "여성 와이드 팬츠",
+      shoes: "여성 스니커즈",
     },
   },
   {
     id: "layer-travel",
-    title: "In-flight layers",
+    title: "Carry-On Layers",
+    subtitle: "Travel Edit",
     reason:
       "AI stacked light layers for cabin-to-arrival temperature swings without weighing down your carry-on.",
     context: "Travel",
@@ -101,10 +108,10 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       shoes: "Sneakers survive security walks and long gates",
     },
     queries: {
-      outer: "women jacket",
-      top: "women sweatshirt",
-      bottom: "women jogger pants",
-      shoes: "women sneakers",
+      outer: "여성 자켓",
+      top: "여성 맨투맨",
+      bottom: "여성 조거팬츠",
+      shoes: "여성 스니커즈",
     },
   },
 ] as const;
@@ -114,6 +121,7 @@ export function lookDefToEmptyLook(def: StylingLookDef): StylingLook {
   return {
     id: def.id,
     title: def.title,
+    subtitle: def.subtitle,
     reason: def.reason,
     context: def.context,
     pieceWhy: def.pieceWhy,
@@ -133,6 +141,7 @@ export function mergeLookProducts(
   return {
     id: def.id,
     title: def.title,
+    subtitle: def.subtitle,
     reason: def.reason,
     context: def.context,
     pieceWhy: def.pieceWhy,

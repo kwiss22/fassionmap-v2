@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { SparklesIcon } from "@/components/ui/SparklesIcon";
 import { TopBar } from "@/components/layout/TopBar";
 import { StyleLabScreen } from "@/components/style-lab/StyleLabScreen";
+import { AiCuratePanel } from "@/components/search/AiCuratePanel";
 import { productDedupeKey, type Product } from "@/lib/product";
 import {
   NAVER_SHOP_DISPLAY_MAX,
@@ -23,7 +24,7 @@ import {
 } from "@/lib/market";
 import { cn } from "@/lib/utils";
 
-type SearchMode = "shop" | "ai";
+type SearchMode = "shop" | "ai" | "curate";
 type ShopSource = MarketShopSourceKey;
 
 const PAGE_SIZE = 40;
@@ -47,7 +48,9 @@ type AliSearchResponse = {
 };
 
 function parseMode(value: string | null): SearchMode {
-  return value === "ai" ? "ai" : "shop";
+  if (value === "ai") return "ai";
+  if (value === "curate") return "curate";
+  return "shop";
 }
 
 function SearchModeTabs({
@@ -66,7 +69,7 @@ function SearchModeTabs({
       {(
         [
           { key: "shop" as const, label: "Shop" },
-          { key: "ai" as const, label: "AI Curation" },
+          { key: "curate" as const, label: "AI Curation" },
         ] as const
       ).map((tab) => (
         <button
@@ -438,11 +441,10 @@ function SearchBody() {
       const params = new URLSearchParams(searchParams.toString());
       if (next === "ai") {
         params.set("mode", "ai");
+      } else if (next === "curate") {
+        params.set("mode", "curate");
       } else {
         params.delete("mode");
-        if (next === "shop" && !params.get("q")) {
-          // keep other shop params
-        }
       }
       const qs = params.toString();
       const target = qs ? `/search?${qs}` : "/search";
@@ -454,19 +456,33 @@ function SearchBody() {
     [router, searchParams]
   );
 
+  const initialPrompt = searchParams.get("q") ?? "";
+
   if (mode === "ai") {
     return (
-      <main className="theme-dark min-h-[100dvh]">
+      <main className="theme-dark h-full">
         <StyleLabScreen />
-        <div className="fixed bottom-20 left-1/2 z-30 -translate-x-1/2 lg:bottom-6">
-          <button
-            type="button"
-            onClick={() => setSearchMode("shop")}
-            className="rounded-full border border-[rgba(57,255,122,0.15)] bg-[#0a1009]/95 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-[#5a7060] backdrop-blur"
-          >
-            Shop search
-          </button>
-        </div>
+      </main>
+    );
+  }
+
+  if (mode === "curate") {
+    return (
+      <main className="min-h-[100dvh] bg-surface text-on-surface">
+        <TopBar title="AI Curation" showBack showStatusStrip={false} />
+
+        <section className="px-5 pt-6">
+          <SearchModeTabs mode={mode} onChange={setSearchMode} />
+          <div className="mt-5">
+            <AiCuratePanel
+              key={initialPrompt}
+              initialPrompt={initialPrompt}
+              autoRun={initialPrompt.trim().length >= 2}
+            />
+          </div>
+        </section>
+
+        <div className="h-20" />
       </main>
     );
   }

@@ -122,7 +122,6 @@ export const TREND_MAP_CITIES: readonly TrendMapCity[] = [
   },
 ] as const;
 
-export function getTrendCityExploreHref(city: TrendMapCity): string {
-  const q = city.trend.replace(/\s×\s/g, " ");
-  return `/search?q=${encodeURIComponent(q)}`;
+export function getTrendCityExploreHref(_city: TrendMapCity): string {
+  return "/feed";
 }

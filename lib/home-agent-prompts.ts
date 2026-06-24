@@ -1,5 +1,5 @@
 /**
- * Home agent example prompts — same sentences passed to /search?mode=ai.
+ * Home agent example prompts — same sentences passed to /search?mode=curate.
  */
 export type HomeAgentPrompt = {
   id: string;

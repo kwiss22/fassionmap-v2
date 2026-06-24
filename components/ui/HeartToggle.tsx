@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/product";
 import { useSaved } from "@/lib/hooks/use-saved";
@@ -25,7 +26,9 @@ export function HeartToggle({
   ariaLabel,
 }: HeartToggleProps) {
   const { has, toggle } = useSaved();
-  const active = has(product.id);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const active = mounted && has(product.id);
   const px = SIZE_PX[size];
 
   return (

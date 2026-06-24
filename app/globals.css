@@ -90,10 +90,11 @@
   --color-ai-surface: rgba(184, 255, 46, 0.12);
 }
 
-:root {
+  :root {
   --background: #ffffff;
   --foreground: #111111;
   --font-geist-mono: "Geist Mono", ui-monospace, monospace;
+  --app-nav-height: calc(4.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 html,
@@ -418,7 +419,16 @@ body {
 }
 
 .pb-nav {
-  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--app-nav-height);
+}
+
+/* Full-height tab screens — fill AppShell flex area above BottomNav */
+.app-tab-screen {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .bottom-nav {

@@ -79,3 +79,9 @@ export function resetOnboardingForDev(): void {
   localStorage.removeItem(FIT_STORAGE_KEY);
   localStorage.removeItem(VIBES_STORAGE_KEY);
 }
+
+export function readVibeLabels(vibeIds: string[]): string[] {
+  return vibeIds
+    .map((id) => VIBE_OPTIONS.find((v) => v.id === id)?.label)
+    .filter((label): label is string => Boolean(label));
+}

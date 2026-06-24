@@ -29,7 +29,7 @@ export function TopBar({
   variant = "light",
 }: TopBarProps) {
   const pathname = usePathname() ?? "/";
-  const back = backHref ?? (showBack ? "/" : undefined);
+  const back = backHref ?? (showBack ? "/feed" : undefined);
   const dark = variant === "dark";
 
   return (
@@ -111,14 +111,14 @@ export function TopBar({
 function Wordmark({ dark }: { dark?: boolean }) {
   return (
     <Link
-      href="/"
+      href="/feed"
       aria-label="Home"
       className={cn(
         "font-playfair text-[18px] leading-none tracking-tight lg:text-[20px]",
         dark ? "text-[#e8f0eb]" : "text-on-surface"
       )}
     >
-      Fashion<em className="not-italic font-semibold">map</em>
+      Fassion<em className="not-italic font-semibold">map</em>
     </Link>
   );
 }
@@ -133,7 +133,7 @@ function DefaultActions({ dark }: { dark?: boolean }) {
       {!onSearchPage ? (
         <>
           <Link
-            href="/search?mode=ai"
+            href="/search?mode=curate"
             aria-label="Search with AI"
             className={cn(
               "ai-search-trigger hidden h-9 min-w-[17rem] max-w-md flex-1 items-center gap-2.5 px-3.5 text-[12px] lg:flex",
@@ -147,7 +147,7 @@ function DefaultActions({ dark }: { dark?: boolean }) {
           </Link>
 
           <Link
-            href="/search?mode=ai"
+            href="/search?mode=curate"
             aria-label="Search with AI"
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border lg:hidden",
@@ -203,13 +203,17 @@ const DESKTOP_NAV: {
   label: string;
   match: (p: string) => boolean;
 }[] = [
-  { href: "/", label: "Home", match: (p) => p === "/" },
-  { href: "/feed", label: "Feed", match: (p) => p.startsWith("/feed") },
+  { href: "/feed", label: "Home", match: (p) => p === "/feed" || p.startsWith("/feed/") },
   { href: "/atlas-preview", label: "Atlas", match: (p) => p.startsWith("/atlas") },
   {
     href: "/search?mode=ai",
     label: "Style Lab",
     match: (p) => p.startsWith("/search") && p.includes("mode=ai"),
+  },
+  {
+    href: "/search?mode=curate",
+    label: "Curate",
+    match: (p) => p.startsWith("/search") && p.includes("mode=curate"),
   },
   { href: "/saved", label: "Saved", match: (p) => p.startsWith("/saved") },
 ];
