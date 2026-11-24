@@ -28,9 +28,16 @@ export function FeedStripCard({
     "Brand";
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onSelect(product)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect(product);
+        }
+      }}
       className={cn(
         "fm-card w-[132px] shrink-0 cursor-pointer text-left",
         className
@@ -67,6 +74,6 @@ export function FeedStripCard({
           <HeartToggle product={product} size="sm" />
         </div>
       </div>
-    </button>
+    </div>
   );
 }

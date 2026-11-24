@@ -1,8 +1,8 @@
 import { resolveBrandQuery, type EditorialSection } from "@/lib/editorial";
 
-/** theme 섹션 id → 네이버 쇼핑 검색어 (한국어 우선) */
+/** theme 섹션 id → 쇼핑 검색어 (AliExpress는 영어 키워드 기준이라 영어 우선) */
 export const THEME_NAVER_QUERY_FALLBACKS: Record<string, readonly string[]> = {
-  "theme-cashmere": ["캐시미어 코트", "캐시미어 니트", "cashmere coat"],
+  "theme-cashmere": ["cashmere coat", "cashmere sweater"],
 };
 
 export function resolveNaverQueriesForSection(
@@ -22,6 +22,6 @@ export function resolveNaverQueriesForSection(
       return [q];
     }
     case "saved-ai":
-      return ["캐시미어 니트", "여성 코트"];
+      return ["cashmere sweater", "women's coat"];
   }
 }

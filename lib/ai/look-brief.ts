@@ -11,7 +11,8 @@ import type {
   LookBriefInput,
 } from "@/lib/ai/types";
 
-const DEFAULT_MAX_OUTPUT_TOKENS = 512;
+// ai-search.ts와 동일한 이유 — thinking 토큰 소모를 감안해 여유를 둔다.
+const DEFAULT_MAX_OUTPUT_TOKENS = 1536;
 
 function formatPrice(
   amount: number,

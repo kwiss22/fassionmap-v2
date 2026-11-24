@@ -191,6 +191,15 @@ export async function fetchAliexpressProductsPage(
   if (errorResponse) {
     const msg = String(errorResponse.msg ?? errorResponse.sub_msg ?? "AliExpress error");
     const code = String(errorResponse.code ?? errorResponse.sub_code ?? "");
+
+    // "결과 없음"은 좁은/특이한 검색어에서 흔히 나오는 정상 상황인데, AliExpress TOP
+    // 게이트웨이가 이걸 빈 배열이 아니라 error_response(코드 405)로 돌려준다.
+    // 여기서 던져버리면 AI 큐레이션처럼 여러 검색어를 병렬로 쓰는 호출부가
+    // 검색어 하나 때문에 전체가 실패하므로, 빈 페이지로 취급한다.
+    if (/result is empty/i.test(msg)) {
+      return { items: [], total: 0, pageNo, pageSize, hasMore: false, nextPageNo: pageNo };
+    }
+
     throw new Error(`AliExpress API: ${msg}${code ? ` (${code})` : ""}`);
   }
 

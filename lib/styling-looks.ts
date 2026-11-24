@@ -55,10 +55,10 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       bottom: "Dark slacks ground the look and hide splash marks",
     },
     queries: {
-      outer: "여성 트렌치코트",
-      top: "여성 니트",
-      bottom: "여성 슬랙스",
-      shoes: "여성 로퍼",
+      outer: "women's trench coat",
+      top: "women's knit sweater",
+      bottom: "women's slacks",
+      shoes: "women's loafers",
     },
   },
   {
@@ -73,10 +73,10 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       bottom: "A-line skirt balances proportions for date-night polish",
     },
     queries: {
-      top: "여성 니트",
-      bottom: "여성 미디 스커트",
-      shoes: "여성 로퍼",
-      bag: "여성 숄더백",
+      top: "women's knit sweater",
+      bottom: "women's midi skirt",
+      shoes: "women's loafers",
+      bag: "women's shoulder bag",
     },
   },
   {
@@ -91,9 +91,9 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       bottom: "Wide pants keep the line relaxed but intentional",
     },
     queries: {
-      top: "캐시미어 니트",
-      bottom: "여성 와이드 팬츠",
-      shoes: "여성 스니커즈",
+      top: "cashmere sweater",
+      bottom: "women's wide leg pants",
+      shoes: "women's sneakers",
     },
   },
   {
@@ -108,10 +108,10 @@ export const HOME_LOOK_DEFS: readonly StylingLookDef[] = [
       shoes: "Sneakers survive security walks and long gates",
     },
     queries: {
-      outer: "여성 자켓",
-      top: "여성 맨투맨",
-      bottom: "여성 조거팬츠",
-      shoes: "여성 스니커즈",
+      outer: "women's jacket",
+      top: "women's sweatshirt",
+      bottom: "women's jogger pants",
+      shoes: "women's sneakers",
     },
   },
 ] as const;

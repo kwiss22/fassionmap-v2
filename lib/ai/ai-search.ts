@@ -24,7 +24,9 @@ import type {
 import { fetchRelatedContent } from "@/lib/naver-content";
 import { productDedupeKey, type Product } from "@/lib/product";
 
-const DEFAULT_MAX_OUTPUT_TOKENS = 768;
+// gemini-flash-latest는 응답 전에 내부 thinking 토큰을 상당히 소모하는 모델이라
+// (간단한 프롬프트에도 수백 토큰), 출력 JSON이 중간에 잘리지 않도록 여유 있게 잡는다.
+const DEFAULT_MAX_OUTPUT_TOKENS = 2048;
 const DEFAULT_RETRY_COUNT = 1;
 const PRODUCTS_PER_QUERY = 12;
 
@@ -173,16 +175,22 @@ async function fetchRelatedArticles(
 }
 
 async function fetchPools(plan: AiSearchPlan): Promise<Product[][]> {
-  const pools: Product[][] = [];
-  for (const search of plan.searches) {
-    const page = await fetchNaverProductsPage(search.query, {
-      start: 1,
-      display: PRODUCTS_PER_QUERY,
-      sort: "sim",
-    });
-    pools.push(page.items);
-  }
-  return pools;
+  // 검색어 하나가 실패(빈 결과 포함)해도 나머지 검색어의 결과는 살리도록
+  // per-query로 격리한다 — 여기서 그냥 throw하면 AI 큐레이션 전체가 죽는다.
+  return Promise.all(
+    plan.searches.map(async (search) => {
+      try {
+        const page = await fetchNaverProductsPage(search.query, {
+          start: 1,
+          display: PRODUCTS_PER_QUERY,
+          sort: "sim",
+        });
+        return page.items;
+      } catch {
+        return [];
+      }
+    })
+  );
 }
 
 function pickFromPool(pool: Product[], rank: number): Product | undefined {

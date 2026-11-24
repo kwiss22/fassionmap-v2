@@ -14,7 +14,9 @@ import type {
   LLMProvider,
   LookBriefInput,
 } from "@/lib/ai/types";
-const GEMINI_MODEL = "gemini-2.5-pro";
+// gemini-2.5-pro / gemini-2.0-flash 계열은 이 프로젝트 free tier 할당량이 0이라
+// 항상 429로 죽는다. gemini-flash-latest는 실제 free tier 할당량이 있어 정상 동작 확인함.
+const GEMINI_MODEL = "gemini-flash-latest";
 
 const ISSUE_DRAFT_RESPONSE_SCHEMA = {
   type: "object",

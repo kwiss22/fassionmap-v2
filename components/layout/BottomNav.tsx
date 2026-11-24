@@ -13,10 +13,10 @@ type NavItem = {
 
 const NAV_ITEMS: readonly NavItem[] = [
   {
-    href: "/feed",
-    label: "Home",
-    icon: <HomeIcon />,
-    match: (p) => p === "/feed" || p.startsWith("/feed/"),
+    href: "/search",
+    label: "Search",
+    icon: <SearchIcon />,
+    match: (p) => p.startsWith("/search") && !p.includes("mode=ai"),
   },
   {
     href: "/atlas-preview",
@@ -31,10 +31,10 @@ const NAV_ITEMS: readonly NavItem[] = [
     match: (p) => p.startsWith("/search") && p.includes("mode=ai"),
   },
   {
-    href: "/feed",
+    href: "/me",
     label: "Profile",
     icon: <UserIcon />,
-    match: (_p) => false,
+    match: (p) => p.startsWith("/me"),
   },
 ];
 
@@ -89,14 +89,15 @@ export function BottomNav() {
   );
 }
 
-function HomeIcon() {
+function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="1.6" />
       <path
-        d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10.5Z"
+        d="M20 20l-4.8-4.8"
         stroke="currentColor"
         strokeWidth="1.6"
-        strokeLinejoin="round"
+        strokeLinecap="round"
       />
     </svg>
   );
