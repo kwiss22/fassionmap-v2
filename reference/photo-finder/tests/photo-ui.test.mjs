@@ -1,0 +1,3 @@
+// DOM QA is run separately via /tmp/photo-examples-check.mjs because its test dependency is not part of the production app.
+import{test}from'node:test';import assert from'node:assert/strict';import{readFile}from'node:fs/promises';
+test('published info pages include explicit contact and affiliate destinations',async()=>{const html=await readFile(new URL('../photo-web/index.html',import.meta.url),'utf8');for(const path of ['/about','/contact','/privacy','/terms','/disclosure'])assert.ok(html.includes('href="'+path+'"'));const privacy=await readFile(new URL('../photo-web/privacy.html',import.meta.url),'utf8');assert.match(privacy,/Google Gemini API/);assert.match(privacy,/제휴 상품 API에는 업로드 사진 자체를 보내지 않습니다/)});
